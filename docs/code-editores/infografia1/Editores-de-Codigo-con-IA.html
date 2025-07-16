@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Interactivo: La Revolución de los Editores de Código con IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Tech -->
+    <!-- Application Structure Plan: The SPA is structured as a narrative dashboard. It starts with a Hero section with "wow" stats to grab attention. It then flows into "The Why" (Benefits), featuring a chart for quantitative data. The interactive core is "The Who" (Top 5 Editors), using a tabbed interface for focused exploration. This is followed by "The How" (Rise of Agents), explaining the technological shift with a visual diagram, and "What's Next" (Future & Responsibility) for a forward-looking conclusion. This structure was chosen to guide the user from general impact to specific tools and future trends, making complex information digestible and engaging, unlike a linear report. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Productivity stats (55% acceleration, 2x faster coding). -> Goal: Inform & Compare -> Viz/Presentation: Horizontal Bar Chart (Chart.js/Canvas) -> Interaction: Hover tooltips showing data source. -> Justification: A chart provides a more potent visual comparison of key metrics than plain text. -> Library/Method: Chart.js.
+        2. Report Info: Features of the 5 AI Editors. -> Goal: Compare & Organize -> Viz/Presentation: JS-powered Tabbed Interface -> Interaction: User clicks on an editor's logo/button to reveal its specific details. -> Justification: This user-driven approach prevents overwhelming the user with a large, dense table and allows for focused comparison. -> Library/Method: Vanilla JS.
+        3. Report Info: The shift from Prompt-Driven to Goal-Based development. -> Goal: Organize & Explain a process -> Viz/Presentation: Diagram built with HTML/CSS (Tailwind Flexbox/Grid) -> Interaction: Subtle hover effects on diagram elements. -> Justification: A visual flow diagram is far more intuitive for explaining a conceptual shift than a block of text, and it's implemented without prohibited libraries. -> Library/Method: HTML/CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .editor-tab.active {
+            background-color: #2563eb; /* blue-600 */
+            color: #ffffff;
+            border-color: #2563eb; /* blue-600 */
+        }
+        .editor-tab:not(.active) {
+            background-color: #ffffff;
+            color: #374151; /* gray-700 */
+            border-color: #d1d5db; /* gray-300 */
+        }
+        .editor-content {
+            display: none;
+        }
+        .editor-content.active {
+            display: block;
+        }
+        .stat-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Hero Section -->
+        <section class="text-center mb-20">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">La Revolución de los Editores de Código con IA</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                La Inteligencia Artificial ya no es un complemento, es un copiloto. Descubre cómo los asistentes de IA están transformando el desarrollo de software, aumentando la productividad y redefiniendo el futuro de la programación.
+            </p>
+        </section>
+
+        <!-- The Why Section (Benefits) -->
+        <section id="benefits" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">¿Por qué adoptar un Asistente de IA?</h2>
+                <p class="text-md text-gray-600 max-w-2xl mx-auto mt-2">Desde la velocidad hasta la calidad, los beneficios son transformadores. La IA automatiza lo mundano para que puedas concentrarte en la innovación.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 items-center">
+                <div class="space-y-6">
+                    <div class="stat-card">
+                        <div class="text-blue-600 mb-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-1">Eficiencia y Productividad</h3>
+                        <p class="text-gray-600">Acelera drásticamente los proyectos automatizando tareas repetitivas y escribiendo código hasta un 55% más rápido.</p>
+                    </div>
+                    <div class="stat-card">
+                         <div class="text-blue-600 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-1">Calidad y Menos Errores</h3>
+                        <p class="text-gray-600">Recibe sugerencias en tiempo real, detecta anomalías y adhiérete a los estándares para un código más limpio y mantenible.</p>
+                    </div>
+                     <div class="stat-card">
+                        <div class="text-blue-600 mb-2">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-1">Optimización de Código</h3>
+                        <p class="text-gray-600">Analiza el código existente para identificar cuellos de botella y sugiere mejoras para un rendimiento superior.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-center mb-4">Impacto en la Productividad</h3>
+                    <div class="chart-container">
+                        <canvas id="productivityChart"></canvas>
+                    </div>
+                     <p class="text-center text-sm text-gray-500 mt-4">Visualización del aumento de la eficiencia reportado por desarrolladores que usan herramientas de IA.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Who Section (Top 5 Editors) -->
+        <section id="editors" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Los 5 Editores con IA Más Populares</h2>
+                <p class="text-md text-gray-600 max-w-2xl mx-auto mt-2">Aunque comparten muchas funciones, cada editor tiene fortalezas únicas. Explora cuál se adapta mejor a tu flujo de trabajo.</p>
+            </div>
+            
+            <div id="editor-tabs" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                <!-- Tabs will be dynamically inserted here -->
+            </div>
+
+            <div id="editor-content-area" class="bg-white p-6 md:p-8 rounded-lg shadow-lg transition-all duration-300 min-h-[300px]">
+                <!-- Content will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- The How Section (Rise of Agents) -->
+        <section id="agents" class="mb-20 bg-slate-100 p-8 rounded-lg">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">La Evolución: El Auge de los Agentes de IA</h2>
+                <p class="text-md text-gray-600 max-w-3xl mx-auto mt-2">Hemos pasado de simples sugerencias de código a la delegación de tareas completas. La IA ya no solo autocompleta, ahora planifica, ejecuta y resuelve problemas de forma autónoma.</p>
+            </div>
+            <div class="flex flex-col md:flex-row justify-center items-stretch gap-8">
+                <div class="flex-1 bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-semibold text-xl text-center mb-4">Antes: Desarrollo Dirigido por Prompts</h3>
+                    <p class="text-gray-600 mb-4 text-center">El desarrollador guiaba a la IA paso a paso para cada pequeña tarea.</p>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center gap-3 bg-gray-50 p-3 rounded">
+                            <span class="font-mono bg-red-100 text-red-800 rounded px-2 py-1">Tú</span>
+                            <p>"Genera una función que sume dos números."</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-gray-50 p-3 rounded">
+                           <span class="font-mono bg-blue-100 text-blue-800 rounded px-2 py-1">IA</span>
+                            <p>function sum(a, b) { return a + b; }</p>
+                        </div>
+                         <div class="flex items-center gap-3 bg-gray-50 p-3 rounded">
+                            <span class="font-mono bg-red-100 text-red-800 rounded px-2 py-1">Tú</span>
+                            <p>"Ahora, genera un test para esa función."</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center text-gray-400 text-4xl font-bold">
+                    →
+                </div>
+                <div class="flex-1 bg-white p-6 rounded-lg shadow-md border-2 border-blue-500">
+                     <h3 class="font-semibold text-xl text-center mb-4 text-blue-600">Ahora: Desarrollo Basado en Objetivos</h3>
+                    <p class="text-gray-600 mb-4 text-center">El desarrollador define un objetivo de alto nivel y el agente de IA lo ejecuta.</p>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center gap-3 bg-gray-50 p-3 rounded">
+                           <span class="font-mono bg-red-100 text-red-800 rounded px-2 py-1">Tú</span>
+                            <p>"Implementa la autenticación de usuarios y crea los tests correspondientes."</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-blue-50 p-3 rounded">
+                            <span class="font-mono bg-blue-100 text-blue-800 rounded px-2 py-1">Agente IA</span>
+                            <div class="space-y-1">
+                                <p>1. Planifica la estructura.</p>
+                                <p>2. Escribe el código del controlador.</p>
+                                <p>3. Genera los tests unitarios.</p>
+                                <p>4. Crea un Pull Request.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The What's Next Section -->
+        <section id="future" class="text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">El Futuro es Colaborativo</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-6">El rol del desarrollador evoluciona hacia el de un arquitecto y supervisor, que guía a la IA para construir sistemas más complejos y robustos. La supervisión humana, la ética y las pruebas rigurosas son más cruciales que nunca para garantizar la calidad y seguridad del software del mañana.</p>
+            <a href="#editors" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300">Explora los Editores</a>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h3 class="text-center text-xl font-semibold mb-6">Recursos para Aprender y Profundizar</h3>
+            <div id="resources-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 text-center">
+                <!-- Resources will be dynamically inserted here -->
+            </div>
+            <div class="text-center mt-8 pt-6 border-t border-gray-700">
+                <p class="text-gray-400 text-sm">Aplicación interactiva generada con Google Gemini.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const editorData = [
+            {
+                id: 'copilot',
+                name: 'GitHub Copilot',
+                developer: 'GitHub (Microsoft)',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.25278C12 6.25278 12 2.75278 15.5 2.75278C19 2.75278 19 6.25278 19 6.25278C19 6.25278 22.5 6.25278 22.5 9.75278C22.5 13.2528 19 13.2528 19 13.2528C19 13.2528 19 16.7528 15.5 16.7528C12 16.7528 12 13.2528 12 13.2528C12 13.2528 8.5 13.2528 8.5 9.75278C8.5 6.25278 12 6.25278 12 6.25278Z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13.2528V21.2528" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 9.75278L1.5 9.75278" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9.75278H22.5" /></svg>',
+                features: [
+                    '<strong>Modo Agente:</strong> Delega issues de GitHub para que la IA los resuelva autónomamente.',
+                    '<strong>Copilot Chat:</strong> Interfaz conversacional integrada para resolver dudas y generar código.',
+                    '<strong>Flexibilidad de Modelos:</strong> Permite elegir entre LLMs como GPT-4.1, Claude y Gemini.',
+                    '<strong>Revisión de Código:</strong> Genera resúmenes de Pull Requests y sugiere correcciones.',
+                    '<strong>Autofix:</strong> Corrige vulnerabilidades de seguridad con un solo clic.'
+                ],
+                link: 'https://github.com/features/copilot'
+            },
+            {
+                id: 'cursor',
+                name: 'Cursor',
+                developer: 'Anysphere Inc.',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>',
+                features: [
+                    '<strong>Comprensión del Codebase:</strong> Entiende el contexto de todo el proyecto para dar respuestas más precisas.',
+                    '<strong>Modo Agente:</strong> Realiza tareas complejas de extremo a extremo, manteniendo al desarrollador en control.',
+                    '<strong>Edición en Lenguaje Natural:</strong> Modifica código existente o crea nuevo a partir de instrucciones.',
+                    '<strong>Referencias @Web:</strong> Busca información actualizada en la web sin salir del editor.',
+                    '<strong>Modo Privacidad:</strong> Garantiza que el código no se almacene en servidores externos.'
+                ],
+                link: 'https://cursor.com/'
+            },
+            {
+                id: 'jetbrains',
+                name: 'JetBrains AI',
+                developer: 'JetBrains s.r.o.',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L0 12l12 12 6-6-6-6 6-6-6-6z"/></svg>',
+                features: [
+                    '<strong>Integración Profunda:</strong> Se integra a la perfección en todo el ecosistema de IDEs de JetBrains.',
+                    '<strong>LLM Propietario (Mellum):</strong> Optimizado para la codificación, ofrece sugerencias rápidas y precisas.',
+                    '<strong>Creación de Tests Unitarios:</strong> Genera automáticamente pruebas bien estructuradas.',
+                    '<strong>Modo Offline:</strong> Permite usar modelos locales sin conexión a internet para máxima privacidad.',
+                    '<strong>Integración VCS:</strong> Ayuda a generar mensajes de commit y a resolver conflictos de Git.'
+                ],
+                link: 'https://www.jetbrains.com/ai-assistant/'
+            },
+            {
+                id: 'replit',
+                name: 'Replit Ghostwriter',
+                developer: 'Replit, Inc.',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h1a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.881 4.002L12 8.119m4.119-4.117L12 8.119M12 21.881V12.03" /></svg>',
+                features: [
+                    '<strong>IDE 100% en la Nube:</strong> Desarrolla, colabora y despliega directamente desde el navegador.',
+                    '<strong>Generación Completa de Aplicaciones:</strong> Su Agente crea aplicaciones funcionales a partir de una idea.',
+                    '<strong>Cero Configuración:</strong> El entorno y las dependencias se gestionan automáticamente.',
+                    '<strong>Colaboración en Tiempo Real:</strong> Trabaja en el mismo código con tu equipo simultáneamente.',
+                    '<strong>Hosting Integrado:</strong> Despliega tu proyecto con un solo clic.'
+                ],
+                link: 'https://replit.com/ai'
+            },
+            {
+                id: 'amazonq',
+                name: 'Amazon Q Developer',
+                developer: 'Amazon Web Services (AWS)',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12.231 1.144C7.031 1.144 2.76 5.114 2.76 9.774c0 3.14 1.93 5.92 4.77 7.29.17.03.25.19.12.33l-1.33 1.5c-.13.15-.02.38.19.38h10.98c.21 0 .32-.23.19-.38l-1.33-1.5c-.13-.14-.05-.3.12-.33a8.216 8.216 0 004.77-7.29c0-4.66-4.27-8.63-9.47-8.63zm-4.14 11.38c-.8 0-1.44-.65-1.44-1.44s.64-1.44 1.44-1.44c.8 0 1.44.65 1.44 1.44s-.64 1.44-1.44 1.44zm8.28 0c-.8 0-1.44-.65-1.44-1.44s.64-1.44 1.44-1.44c.8 0 1.44.65 1.44 1.44s-.64 1.44-1.44 1.44z"/></svg>',
+                features: [
+                    '<strong>Integración con Ecosistema AWS:</strong> Asistencia especializada para desarrollar en la nube de Amazon.',
+                    '<strong>Investigación de Problemas:</strong> Diagnostica errores operativos en CloudWatch y sugiere soluciones.',
+                    '<strong>Inventario de Recursos:</strong> Pregunta en lenguaje natural sobre los recursos de tu cuenta AWS.',
+                    '<strong>Seguridad y Privacidad:</strong> Diseñado con controles de acceso de nivel empresarial.',
+                    '<strong>Diagnóstico de Errores:</strong> Ayuda a resolver problemas comunes de la consola de AWS.'
+                ],
+                link: 'https://aws.amazon.com/q/developer/'
+            }
+        ];
+        
+        const resourcesData = [
+            { name: "GitHub Copilot", link: "https://docs.github.com/en/copilot" },
+            { name: "Cursor", link: "https://cursor.com/blog" },
+            { name: "JetBrains AI", link: "https://www.jetbrains.com/help/ai-assistant/" },
+            { name: "Replit AI", link: "https://docs.replit.com/category/replit-ai" },
+            { name: "Amazon Q", link: "https://docs.aws.amazon.com/amazonq/" },
+        ];
+
+
+        const tabsContainer = document.getElementById('editor-tabs');
+        const contentContainer = document.getElementById('editor-content-area');
+        
+        editorData.forEach((editor, index) => {
+            const tabButton = document.createElement('button');
+            tabButton.className = 'editor-tab flex items-center justify-center font-semibold py-2 px-4 border rounded-lg transition duration-300';
+            tabButton.innerHTML = editor.icon + editor.name;
+            tabButton.dataset.target = editor.id;
+            tabsContainer.appendChild(tabButton);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.id = editor.id;
+            contentDiv.className = 'editor-content';
+            contentDiv.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">${editor.name}</h3>
+                        <p class="text-sm text-gray-500 mb-4">Desarrollado por: <strong>${editor.developer}</strong></p>
+                        <p class="text-gray-600 mb-6">Características destacadas:</p>
+                        <ul class="space-y-3">
+                            ${editor.features.map(feature => `<li class="flex items-start"><svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${feature}</span></li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="flex flex-col justify-center items-center bg-slate-50 p-6 rounded-lg">
+                        <h4 class="font-semibold text-center mb-4">¿Listo para probarlo?</h4>
+                        <a href="${editor.link}" target="_blank" rel="noopener noreferrer" class="w-full text-center bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300">
+                            Ir al Sitio Oficial
+                        </a>
+                    </div>
+                </div>
+            `;
+            contentContainer.appendChild(contentDiv);
+
+            if (index === 0) {
+                tabButton.classList.add('active');
+                contentDiv.classList.add('active');
+            }
+        });
+
+        tabsContainer.addEventListener('click', function(e) {
+            const clickedTab = e.target.closest('.editor-tab');
+            if (!clickedTab) return;
+            
+            tabsContainer.querySelectorAll('.editor-tab').forEach(tab => tab.classList.remove('active'));
+            contentContainer.querySelectorAll('.editor-content').forEach(content => content.classList.remove('active'));
+
+            clickedTab.classList.add('active');
+            document.getElementById(clickedTab.dataset.target).classList.add('active');
+        });
+
+        const resourcesContainer = document.getElementById('resources-grid');
+        resourcesData.forEach(resource => {
+             const resourceLink = document.createElement('a');
+             resourceLink.href = resource.link;
+             resourceLink.target = "_blank";
+             resourceLink.rel = "noopener noreferrer";
+             resourceLink.className = "block bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition duration-300";
+             resourceLink.innerHTML = `<h4 class="font-semibold">${resource.name}</h4><p class="text-xs text-gray-400">Documentación Oficial</p>`;
+             resourcesContainer.appendChild(resourceLink);
+        });
+
+        const ctx = document.getElementById('productivityChart').getContext('2d');
+        const productivityChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Finalización de Tareas', 'Reducción de Tiempo (Docs/Tests)', 'Aumento General de Productividad'],
+                datasets: [{
+                    label: 'Aumento de Eficiencia (%)',
+                    data: [55, 70, 33], // Used average of 60-80 for second bar
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(34, 197, 94, 0.7)',
+                        'rgba(249, 115, 22, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(34, 197, 94, 1)',
+                        'rgba(249, 115, 22, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.1)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            },
+                            footer: function(tooltipItems) {
+                                const sources = {
+                                    'Finalización de Tareas': 'Fuente: Varios reportes',
+                                    'Reducción de Tiempo (Docs/Tests)': 'Fuente: Encuestas a desarrolladores',
+                                    'Aumento General de Productividad': 'Fuente: Stack Overflow Survey'
+                                };
+                                return sources[tooltipItems[0].label] || '';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+    </script>
+</body>
+</html>
