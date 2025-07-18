@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía: Estadística en Altas Dimensiones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" integrity="sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js" integrity="sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FQ0oxwDF3BGKtDXcEc+T1b2N+teh/OJfpU0jr6" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    
+    <!-- 
+    Plan de la Infografía:
+    Narrativa: La infografía guiará al usuario desde la definición de "alta dimensión" y sus problemas inherentes ("La Maldición de la Dimensionalidad") hacia las soluciones y enfoques modernos que utilizan los estadísticos y científicos de datos. Se cierra con un caso de estudio práctico para consolidar los conceptos.
+    Estructura:
+    1.  Título y Gancho: Definir qué es alta dimensión ($p \gg n$).
+    2.  La Maldición de la Dimensionalidad: Explicar los 4 problemas principales (dispersión, correlaciones espurias, complejidad, distancias) en una cuadrícula visual.
+    3.  El Arsenal del Estadístico: Presentar las estrategias principales (Regularización, Reducción, Selección) usando un diagrama de flujo y un gráfico de radar para comparar métodos.
+    4.  Caso de Estudio - Genómica: Aplicar los conceptos a un problema real, mostrando la selección de variables con LASSO y la visualización de datos reducidos.
+    5.  Conclusión: Resumir la importancia de estas técnicas.
+    
+    Selección de Visualizaciones y Justificación (Confirmación: SIN SVG, SIN Mermaid JS):
+    -   Problema - Dispersión de Datos: Objetivo: Informar. Visualización: Icono Unicode y texto. Justificación: Un concepto abstracto se representa mejor simbólicamente que con un gráfico complejo. Método: HTML/CSS.
+    -   Problema - Correlaciones Espurias: Objetivo: Relaciones. Visualización: Gráfico de Dispersión (Scatter Plot). Justificación: Es la forma estándar de mostrar correlación (o la falta de ella), ilustrando perfectamente el punto. Librería: Chart.js (Canvas).
+    -   Problema - Complejidad Computacional: Objetivo: Cambio. Visualización: Gráfico de Líneas (Line Chart). Justificación: Ideal para mostrar una tendencia (crecimiento exponencial del tiempo de cómputo) frente a un aumento de dimensiones. Librería: Chart.js (Canvas).
+    -   Problema - Distancias Engañosas: Objetivo: Comparar. Visualización: Gráfico de Barras (Bar Chart). Justificación: Compara directamente la distribución de distancias en baja vs. alta dimensión, mostrando la concentración de manera clara. Librería: Chart.js (Canvas).
+    -   Comparando Métodos de Regularización: Objetivo: Comparar. Visualización: Gráfico de Radar (Radar Chart). Justificación: Excelente para comparar múltiples características (rendimiento, selección de variables, etc.) entre varios métodos (LASSO, Ridge). Librería: Chart.js (Canvas).
+    -   Diagrama de Flujo de Estrategias: Objetivo: Organizar. Visualización: Diagrama con cajas y flechas. Justificación: Representa un flujo de decisiones de manera clara. Método: HTML/CSS con Tailwind.
+    -   Caso de Estudio - Selección con LASSO: Objetivo: Cambio/Composición. Visualización: Gráfico de Barras Apiladas (Stacked Bar Chart). Justificación: Muestra cómo cambia la composición de coeficientes (cero vs. no cero) a medida que aumenta el parámetro de regularización. Librería: Chart.js (Canvas).
+    -   Caso de Estudio - Visualización de Clusters: Objetivo: Relaciones. Visualización: Gráfico de Burbujas (Bubble Chart). Justificación: Es la forma ideal de visualizar clusters en un espacio de 2D reducido, donde cada punto representa una observación. Librería: Chart.js (Canvas).
+    
+    Paleta de Colores Seleccionada: Brilliant Blues (#004E89, #007CC7, #48A9A6, #E4E4E4, #F4F4F4).
+    -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F4F4;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .flowchart-box {
+            border: 2px solid #007CC7;
+            background-color: white;
+            color: #004E89;
+        }
+        .flowchart-arrow {
+            color: #007CC7;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-black text-[#004E89] uppercase tracking-wider">Estadística en Altas Dimensiones</h1>
+            <p class="text-xl md:text-2xl mt-4 text-gray-600">Navegando el universo de datos donde las variables superan a las observaciones.</p>
+            <div class="mt-8 text-5xl md:text-7xl font-bold bg-white p-6 rounded-lg shadow-xl inline-block text-[#007CC7]">
+                <span class="katex"> $$ p \gg n $$</span>
+            </div>
+        </header>
+
+        <section id="curse" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#004E89]">La Maldición de la Dimensionalidad</h2>
+                <p class="max-w-3xl mx-auto mt-4 text-lg text-gray-700">A medida que añadimos más dimensiones (variables), el espacio de datos se expande tan rápidamente que surgen problemas contraintuitivos que desafían los métodos estadísticos tradicionales.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#007CC7] mb-3">1. Dispersión de Datos Extrema</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">En altas dimensiones, los puntos de datos se vuelven extremadamente solitarios. El volumen del espacio aumenta tan rápido que los datos disponibles no son suficientes para llenarlo, haciendo que todo se vuelva un "vecino lejano".</p>
+                    <div class="mt-auto text-center text-6xl text-[#48A9A6]" aria-hidden="true">
+                        ⚿ ... ⚿ ... ⚿
+                    </div>
+                     <p class="text-sm text-gray-500 text-center mt-2">Los datos se aislan en un vasto espacio vacío, dificultando la estimación de densidad.</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#007CC7] mb-3">2. Correlaciones Espurias</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">Con miles de variables, es casi garantizado encontrar algunas que parezcan estar relacionadas solo por pura casualidad. El ruido puede parecer una señal, llevando a conclusiones falsas.</p>
+                    <div class="chart-container h-[250px] mt-auto">
+                        <canvas id="spuriousCorrelationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#007CC7] mb-3">3. Complejidad Computacional</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">El costo en tiempo y memoria de los algoritmos puede crecer exponencialmente con el número de dimensiones, haciendo que muchos métodos clásicos sean inviables en la práctica.</p>
+                    <div class="chart-container h-[250px] mt-auto">
+                        <canvas id="computationTimeChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+                    <h3 class="text-2xl font-bold text-[#007CC7] mb-3">4. Distancias Engañosas</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">En un espacio de alta dimensión, la distancia entre el punto más cercano y el más lejano a una observación de referencia se vuelve casi indistinguible. Esto rompe algoritmos basados en distancia como k-NN.</p>
+                    <div class="chart-container h-[250px] mt-auto">
+                        <canvas id="distanceConcentrationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="arsenal" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#004E89]">El Arsenal del Estadístico: Enfoques de Solución</h2>
+                <p class="max-w-3xl mx-auto mt-4 text-lg text-gray-700">Para combatir la maldición de la dimensionalidad, se han desarrollado estrategias poderosas que se centran en la simplicidad y la selección de lo verdaderamente importante.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-8 mb-12">
+                 <div class="flex flex-col items-center text-center">
+                    <div class="flowchart-box rounded-lg p-4 text-xl font-bold">Problema de Alta Dimensión $$p \gg n$$</div>
+                    <div class="text-5xl font-thin my-4 flowchart-arrow">↓</div>
+                    <div class="w-full lg:flex lg:justify-around">
+                        <div class="flex flex-col items-center mb-8 lg:mb-0">
+                             <div class="flowchart-box rounded-md p-3 font-semibold">Regularización</div>
+                             <div class="text-3xl my-2 flowchart-arrow">→</div>
+                             <p class="max-w-xs text-gray-600">Penalizar la complejidad del modelo para evitar el sobreajuste y reducir la influencia de variables irrelevantes (Ej: LASSO, Ridge).</p>
+                        </div>
+                         <div class="flex flex-col items-center mb-8 lg:mb-0">
+                             <div class="flowchart-box rounded-md p-3 font-semibold">Reducción de Dimensión</div>
+                              <div class="text-3xl my-2 flowchart-arrow">→</div>
+                             <p class="max-w-xs text-gray-600">Proyectar los datos en un subespacio de menor dimensión, conservando la mayor cantidad de información posible (Ej: PCA, t-SNE).</p>
+                        </div>
+                        <div class="flex flex-col items-center">
+                             <div class="flowchart-box rounded-md p-3 font-semibold">Selección de Variables</div>
+                              <div class="text-3xl my-2 flowchart-arrow">→</div>
+                             <p class="max-w-xs text-gray-600">Elegir explícitamente un subconjunto de las variables más predictivas para construir un modelo más simple y interpretable.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-bold text-center text-[#007CC7] mb-4">Comparando Métodos de Regularización</h3>
+                <p class="text-gray-600 text-center mb-6 max-w-2xl mx-auto">LASSO, Ridge y Elastic Net ofrecen diferentes compromisos. LASSO es excelente para seleccionar variables (reduce coeficientes a cero), mientras que Ridge maneja mejor las variables correlacionadas. Elastic Net es un híbrido de ambos.</p>
+                <div class="chart-container">
+                    <canvas id="regularizationRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="case-study" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#004E89]">Caso de Estudio: Predicción Genómica</h2>
+                <p class="max-w-3xl mx-auto mt-4 text-lg text-gray-700">Imaginemos un estudio con p=20,000 genes y solo n=200 pacientes. Nuestro objetivo es identificar los genes asociados a una enfermedad.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-2xl font-bold text-center text-[#007CC7] mb-4">Selección de Genes con LASSO</h3>
+                    <p class="text-gray-600 mb-6">El método LASSO aplica una penalización (lambda) que fuerza a los coeficientes de los genes menos informativos a ser exactamente cero. Al aumentar lambda, nos quedamos solo con los predictores más fuertes, simplificando drásticamente el modelo.</p>
+                    <div class="chart-container">
+                        <canvas id="lassoFeatureSelectionChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                     <h3 class="text-2xl font-bold text-center text-[#007CC7] mb-4">Visualización de Grupos de Pacientes</h3>
+                     <p class="text-gray-600 mb-6">Después de reducir las 20,000 dimensiones de genes a solo 2 "componentes principales" con una técnica como PCA, podemos visualizar los datos. A menudo, los pacientes se agrupan naturalmente según su estado (sano o enfermo), revelando patrones ocultos.</p>
+                     <div class="chart-container">
+                        <canvas id="pcaClusterChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-center mt-16 border-t pt-8 border-[#007CC7]">
+             <h3 class="text-2xl font-bold text-[#004E89]">El Futuro es de Alta Dimensión</h3>
+             <p class="max-w-3xl mx-auto mt-4 text-lg text-gray-700">Lejos de ser un obstáculo insuperable, la alta dimensionalidad es la nueva frontera del descubrimiento. Con las herramientas estadísticas adecuadas, podemos extraer señales valiosas del ruido y resolver algunos de los problemas más complejos de la ciencia y la industria moderna.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const commonTooltipOptions = {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                    return label.join(' ');
+                                } else {
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const wrapLabels = (label, maxLength = 16) => {
+                if (typeof label !== 'string' || label.length <= maxLength) {
+                    return label;
+                }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).trim().length > maxLength) {
+                        lines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine = (currentLine + ' ' + word).trim();
+                    }
+                }
+                if (currentLine) {
+                    lines.push(currentLine.trim());
+                }
+                return lines;
+            };
+
+            const colors = {
+                darkBlue: '#004E89',
+                midBlue: '#007CC7',
+                teal: '#48A9A6',
+                lightGray: '#E4E4E4',
+                bgGray: '#F4F4F4'
+            };
+
+            new Chart(document.getElementById('spuriousCorrelationChart').getContext('2d'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Datos Aleatorios',
+                        data: Array.from({ length: 50 }, () => ({ x: Math.random() * 10, y: Math.random() * 10 + 0.5 * (Math.random() * 10) })),
+                        backgroundColor: colors.teal,
+                    }, {
+                        label: 'Tendencia Falsa',
+                        data: [{x: 0, y: 3}, {x: 10, y: 9}],
+                        type: 'line',
+                        borderColor: colors.darkBlue,
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: { ...commonTooltipOptions,
+                    maintainAspectRatio: false,
+                    scales: { x: { title: { display: true, text: 'Variable Aleatoria 1' } }, y: { title: { display: true, text: 'Variable Aleatoria 2' } } }
+                }
+            });
+
+            new Chart(document.getElementById('computationTimeChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['10', '100', '1,000', '10,000', '100,000'],
+                    datasets: [{
+                        label: 'Tiempo de Cómputo (seg)',
+                        data: [0.1, 1, 30, 900, 36000],
+                        borderColor: colors.midBlue,
+                        backgroundColor: 'rgba(0, 124, 199, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { ...commonTooltipOptions,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: '# Dimensiones (p)' } },
+                        y: { type: 'logarithmic', title: { display: true, text: 'Tiempo (escala log)' } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('distanceConcentrationChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Distancia Mín', 'Distancia Media', 'Distancia Máx'],
+                    datasets: [{
+                        label: 'Baja Dimensión (p=3)',
+                        data: [1.5, 5, 10],
+                        backgroundColor: colors.teal,
+                    }, {
+                        label: 'Alta Dimensión (p=1000)',
+                        data: [9.8, 9.9, 10],
+                        backgroundColor: colors.darkBlue,
+                    }]
+                },
+                options: { ...commonTooltipOptions,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Valor de la Distancia' } } }
+                }
+            });
+
+            new Chart(document.getElementById('regularizationRadarChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: [
+                        wrapLabels('Selección de Variables'),
+                        wrapLabels('Manejo de Multicolinealidad'),
+                        'Interpretabilidad', 
+                        wrapLabels('Rendimiento Predictivo'),
+                        'Rapidez'
+                    ],
+                    datasets: [{
+                        label: 'LASSO',
+                        data: [5, 2, 4, 4, 5],
+                        backgroundColor: 'rgba(0, 78, 137, 0.4)',
+                        borderColor: colors.darkBlue,
+                        pointBackgroundColor: colors.darkBlue
+                    }, {
+                        label: 'Ridge',
+                        data: [1, 5, 3, 5, 4],
+                        backgroundColor: 'rgba(72, 169, 166, 0.4)',
+                        borderColor: colors.teal,
+                        pointBackgroundColor: colors.teal
+                    }]
+                },
+                options: { ...commonTooltipOptions,
+                    maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true, max: 5, ticks: { stepSize: 1 } } }
+                }
+            });
+            
+            new Chart(document.getElementById('lassoFeatureSelectionChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Muy Bajo', 'Bajo', 'Medio', 'Alto', 'Muy Alto'],
+                    datasets: [{
+                        label: 'Genes Seleccionados',
+                        data: [18000, 5000, 800, 50, 5],
+                        backgroundColor: colors.midBlue,
+                    }, {
+                        label: 'Genes Descartados',
+                        data: [2000, 15000, 19200, 19950, 19995],
+                        backgroundColor: colors.lightGray,
+                    }]
+                },
+                options: { ...commonTooltipOptions,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, title: { display: true, text: 'Fuerza de Penalización λ' } },
+                        y: { stacked: true, title: { display: true, text: '# de Genes (de 20,000)' } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('pcaClusterChart').getContext('2d'), {
+                type: 'bubble',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Pacientes Sanos',
+                            data: Array.from({length: 30}, () => ({x: Math.random() * 5 + 1, y: Math.random() * 5 + 1, r: 5})),
+                            backgroundColor: 'rgba(72, 169, 166, 0.7)'
+                        },
+                        {
+                            label: 'Pacientes con Enfermedad',
+                            data: Array.from({length: 30}, () => ({x: Math.random() * 5 + 6, y: Math.random() * 5 + 6, r: 5})),
+                            backgroundColor: 'rgba(0, 78, 137, 0.7)'
+                        }
+                    ]
+                },
+                 options: { ...commonTooltipOptions,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Componente Principal 1' } },
+                        y: { title: { display: true, text: 'Componente Principal 2' } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
