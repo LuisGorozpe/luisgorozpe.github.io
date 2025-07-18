@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glosario Interactivo de Terminología de las Tecnologías de la Información (IT)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- 
+    Chosen Palette: Brilliant Blues
+    -->
+    <!-- 
+    Application Structure Plan: The application is designed as an interactive, filterable, single-page glossary. The structure has been enhanced from a static infographic to a dynamic reference tool.
+    1.  **Header & Navigation:** A main header introduces the application, followed by a new sticky navigation bar that allows users to jump between major technology domains (General, Web, Cloud, etc.). This improves usability on a content-rich page.
+    2.  **Search/Filter:** A new search bar is the primary interactive element. It allows users to dynamically filter all terminology cards in real-time, making information discovery fast and efficient. This transforms the page from a passive reading experience to an active exploration tool.
+    3.  **Thematic Sections:** The content remains organized into logical domains (General, Web, Cloud, DevOps, Data) to provide structure.
+    4.  **New Sections Added:** To increase the depth of the content, two new sections, "Cloud Native & Orchestration" and "Security & Networking," have been added. These cover modern, critical concepts.
+    5.  **Content Cards:** Each term or group of related terms is encapsulated in a "card." This modular approach allows the search functionality to easily show or hide content blocks without breaking the page layout.
+    This design prioritizes quick information retrieval and comprehensive coverage, making it a useful, interactive resource rather than just a static visualization.
+    -->
+    <!-- 
+    Visualization & Content Choices: The application uses a mix of visualizations and structured text, all implemented without SVG or Mermaid JS.
+    1.  **Charts (Chart.js):** Donut and Bar charts are used for quantitative data (Cloud Market Share, ML Library Popularity). Choice: Chart.js on Canvas. Justification: These are the standard, effective charts for showing proportions and comparisons, respectively.
+    2.  **Diagrams (HTML/CSS):** Conceptual relationships (Agile vs. Waterfall, Web Roles, SaaS Pyramid, DevOps Loop, AI/ML/DL hierarchy) are represented using diagrams built with styled HTML divs and Tailwind CSS. Choice: HTML/CSS. Justification: This method avoids forbidden SVG/Mermaid dependencies while creating clear, schematic visuals for abstract concepts.
+    3.  **New Content (Structured Text):** The new sections on Cloud Native and Security consist of structured text blocks. Choice: Styled HTML cards. Justification: These terms are definitional. Clear, concise text in a well-organized card format is the most effective way to present them for quick reference and searchability.
+    4.  **Interaction (JavaScript):** The core interaction is the search filter. Choice: Vanilla JS. Justification: It provides a powerful way to navigate the large volume of information, directly addressing the goal of making content "easily explorable."
+    -->
+    <!-- 
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
+    -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #E6F6F8;
+            padding-top: 160px; /* Increased padding to prevent header overlap */
+        }
+        .header-nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: #E6F6F8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .pyramid-level {
+            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+            margin-bottom: -1px;
+        }
+        .devops-loop {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 1rem;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            position: relative;
+        }
+        .devops-loop::before {
+            content: '∞';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12rem;
+            color: #7ED4E8;
+            z-index: 0;
+            line-height: 1;
+        }
+        .devops-item {
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="header-nav-container">
+        <header class="bg-[#004AAD] text-white text-center p-6">
+            <h1 class="text-3xl md:text-4xl font-extrabold">El Universo Terminológico de las Tecnologías de la Información (IT)
+</h1>
+            <p class="text-md text-[#7ED4E8] max-w-3xl mx-auto">Una guía interactiva de los conceptos y abreviaturas clave.</p>
+        </header>
+        
+        <nav class="bg-white shadow-md">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <input id="search-input" type="search" placeholder="Buscar término..." class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0079C2]">
+                    </div>
+                    <div class="hidden md:flex items-center space-x-4 text-sm font-medium">
+                        <a href="#general" class="text-gray-600 hover:text-[#0079C2]">General</a>
+                        <a href="#web" class="text-gray-600 hover:text-[#0079C2]">Web</a>
+                        <a href="#cloud" class="text-gray-600 hover:text-[#0079C2]">Cloud</a>
+                        <a href="#devops" class="text-gray-600 hover:text-[#0079C2]">DevOps</a>
+                        <a href="#cloud-native" class="text-gray-600 hover:text-[#0079C2]">Cloud Native</a>
+                        <a href="#security" class="text-gray-600 hover:text-[#0079C2]">Seguridad</a>
+                        <a href="#data" class="text-gray-600 hover:text-[#0079C2]">Datos & IA</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="general" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#004AAD]">Conceptos Fundamentales</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Toda gran estructura se construye sobre cimientos sólidos. Estos son los términos y metodologías transversales que forman la base del desarrollo de software moderno.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6 term-card">
+                    <h3 class="font-bold text-xl mb-3 text-[#0079C2]">Metodologías de Desarrollo</h3>
+                     <p class="text-gray-600 mb-4">Las metodologías organizan el caos del desarrollo en procesos estructurados. La agilidad permite adaptarse al cambio, mientras que el modelo en cascada requiere una planificación inicial exhaustiva.</p>
+                    <div class="flex flex-col space-y-4">
+                        <div>
+                            <h4 class="font-semibold">Agile</h4>
+                            <p class="text-sm">Enfoque iterativo y flexible centrado en la colaboración y la entrega continua de valor. <a href="https://www.atlassian.com/es/agile" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Waterfall (Cascada)</h4>
+                            <p class="text-sm">Modelo secuencial y lineal donde cada fase debe completarse antes de iniciar la siguiente. <a href="https://es.wikipedia.org/wiki/Modelo_en_cascada" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="bg-white rounded-lg shadow-md p-6 term-card">
+                     <h3 class="font-bold text-xl mb-3 text-[#0079C2]">Herramientas y Principios Clave</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold">API (Application Programming Interface)</h4>
+                            <p class="text-sm">Conjunto de reglas que permite que diferentes aplicaciones se comuniquen entre sí. Es el "contrato" entre servicios. <a href="https://developer.mozilla.org/es/docs/Web/API" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold">Git</h4>
+                            <p class="text-sm">Sistema de control de versiones distribuido, esencial para el trabajo en equipo y el seguimiento de cambios en el código. <a href="https://git-scm.com/book/es/v2" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold">UI/UX (User Interface / User Experience)</h4>
+                            <p class="text-sm">UI es la parte visual con la que interactúa el usuario. UX es la sensación general y la facilidad de uso de esa interacción. <a href="https://www.uxdesigninstitute.com/blog/what-is-the-difference-between-ux-and-ui-design/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="web" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#004AAD]">Desarrollo Web</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">El ecosistema web se divide en dos mundos complementarios: lo que el usuario ve y con lo que interactúa (Front-End) y la lógica que lo hace funcionar por detrás (Back-End).</p>
+             <div class="bg-white rounded-lg shadow-md p-6 mb-8 term-card">
+                 <h3 class="font-bold text-xl mb-4 text-center text-[#0079C2]">Los Roles en el Desarrollo Web</h3>
+                 <p class="text-gray-600 mb-6 text-center">Entender la especialización es clave. El Front-End construye la fachada visible, el Back-End edifica la maquinaria interna, y el Full-Stack domina ambos terrenos, conectando la experiencia de usuario con la lógica del servidor.</p>
+                 <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-0 relative h-48">
+                    <div class="w-32 h-32 bg-[#7ED4E8] rounded-full flex items-center justify-center text-center p-2 z-10 shadow-lg">
+                        <span class="font-bold text-[#004AAD]">Front-End</span>
+                    </div>
+                    <div class="w-32 h-32 bg-[#00A5E0] rounded-full flex items-center justify-center text-center p-2 md:-ml-8 z-20 shadow-lg">
+                        <span class="font-bold text-white">Full-Stack</span>
+                    </div>
+                    <div class="w-32 h-32 bg-[#0079C2] rounded-full flex items-center justify-center text-center p-2 md:-ml-8 z-10 shadow-lg">
+                         <span class="font-bold text-white">Back-End</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">HTML (HyperText Markup Language)</h4>
+                    <p class="text-sm">El esqueleto de la web. Estructura el contenido de una página. <a href="https://developer.mozilla.org/es/docs/Web/HTML" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">CSS (Cascading Style Sheets)</h4>
+                    <p class="text-sm">El estilo de la web. Define la apariencia visual del HTML. <a href="https://developer.mozilla.org/es/docs/Web/CSS" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">JavaScript (JS)</h4>
+                    <p class="text-sm">El cerebro de la web. Añade interactividad y dinamismo. <a href="https://developer.mozilla.org/es/docs/Web/JavaScript" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                 <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">REST (Representational State Transfer)</h4>
+                    <p class="text-sm">Un estilo de arquitectura para diseñar APIs. Usa métodos HTTP estándar. <a href="https://restfulapi.net/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                 <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Framework</h4>
+                    <p class="text-sm">Una estructura con reglas definidas que agiliza el desarrollo (Ej: React, Angular, Django). <a href="https://es.wikipedia.org/wiki/Framework" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                 <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">CMS (Content Management System)</h4>
+                    <p class="text-sm">Sistema para gestionar contenido digital sin necesidad de programar (Ej: WordPress). <a href="https://es.wikipedia.org/wiki/Sistema_de_gesti%C3%B3n_de_contenidos" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="cloud" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#004AAD]">Cloud Computing</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">La "nube" no es más que ordenadores de terceros accesibles por internet. Ofrece servicios que abstraen la complejidad de la infraestructura física, permitiendo a los desarrolladores centrarse en crear.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div class="bg-white rounded-lg shadow-md p-6 term-card">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#0079C2]">Modelos de Servicio "As a Service"</h3>
+                    <p class="text-gray-600 mb-6 text-center">Cada nivel de la pirámide ofrece una capa mayor de abstracción. IaaS proporciona la infraestructura básica, PaaS añade la plataforma de desarrollo, y SaaS entrega el software final listo para usar.</p>
+                     <div class="flex flex-col items-center">
+                        <div class="pyramid-level bg-[#00A5E0] text-white w-full md:w-5/6 text-center p-4 font-bold">SaaS (Software)</div>
+                        <div class="pyramid-level bg-[#0079C2] text-white w-full md:w-11/12 text-center p-4 font-bold">PaaS (Platform)</div>
+                        <div class="pyramid-level bg-[#004AAD] text-white w-full text-center p-4 font-bold">IaaS (Infrastructure)</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 term-card">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#0079C2]">Cuota de Mercado de Cloud (Q1 2024)</h3>
+                    <p class="text-gray-600 mb-6 text-center">El mercado de la nube está dominado por tres gigantes tecnológicos. AWS lidera, seguido por Microsoft Azure y Google Cloud Platform, que compiten ferozmente por la innovación y la cuota de mercado.</p>
+                    <div class="chart-container">
+                        <canvas id="cloudMarketShareChart"></canvas>
+                    </div>
+                </div>
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">VM (Virtual Machine)</h4>
+                        <p class="text-xs">Emulación de un sistema informático completo dentro de otro. <a href="https://azure.microsoft.com/es-es/resources/overview/what-is-a-virtual-machine/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">Container</h4>
+                        <p class="text-xs">Paquete ligero y portable que contiene una aplicación y sus dependencias (Ej: Docker). <a href="https://www.docker.com/resources/what-container/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">Serverless / FaaS</h4>
+                        <p class="text-xs">Modelo donde el proveedor de la nube gestiona la infraestructura y solo se paga por el tiempo de ejecución. <a href="https://aws.amazon.com/es/serverless/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">CDN (Content Delivery Network)</h4>
+                        <p class="text-xs">Red de servidores distribuidos geográficamente para entregar contenido web rápidamente. <a href="https://www.cloudflare.com/es-es/learning/cdn/what-is-a-cdn/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="devops" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#004AAD]">DevOps y MLOps</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Filosofías que buscan unificar el desarrollo (Dev), las operaciones (Ops) y el Machine Learning (ML) para automatizar y agilizar la entrega de software y modelos de IA.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6 term-card">
+                     <h3 class="font-bold text-xl mb-4 text-center text-[#0079C2]">El Ciclo Infinito de DevOps</h3>
+                     <p class="text-gray-600 mb-6 text-center">DevOps no es una herramienta, sino una cultura de colaboración y automatización. Su ciclo de vida representa un proceso continuo de mejora, desde la planificación hasta el monitoreo y la retroalimentación.</p>
+                    <div class="devops-loop">
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Planificar</div>
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Codificar</div>
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Construir</div>
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Probar</div>
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Monitorear</div>
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Operar</div>
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Desplegar</div>
+                        <div class="devops-item text-center p-2 bg-white/70 rounded-md shadow">Lanzar</div>
+                    </div>
+                </div>
+                 <div class="bg-white rounded-lg shadow-md p-6 term-card">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#0079C2]">Conceptos Clave de Operaciones</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold">CI/CD (Continuous Integration / Continuous Delivery)</h4>
+                            <p class="text-sm">Práctica de integrar y entregar código de forma automática y frecuente para reducir errores y acelerar el despliegue. <a href="https://www.redhat.com/es/topics/devops/what-is-ci-cd" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold">IaC (Infrastructure as Code)</h4>
+                            <p class="text-sm">Gestionar y aprovisionar infraestructura mediante código y herramientas de automatización, en lugar de procesos manuales. <a href="https://docs.microsoft.com/es-es/devops/deliver/what-is-infrastructure-as-code" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold">MLOps (Machine Learning Operations)</h4>
+                            <p class="text-sm">Aplicación de los principios DevOps a los flujos de trabajo de Machine Learning, para automatizar y gestionar el ciclo de vida de los modelos. <a href="https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cloud-native" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#004AAD]">Cloud Native y Orquestación</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Construir y ejecutar aplicaciones para aprovechar al máximo las ventajas del modelo de computación en la nube, centrándose en la resiliencia, la agilidad y la escalabilidad.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Kubernetes (K8s)</h4>
+                    <p class="text-sm">Sistema de orquestación de contenedores de código abierto para automatizar el despliegue, escalado y gestión de aplicaciones en contenedores. <a href="https://kubernetes.io/es/docs/concepts/overview/what-is-kubernetes/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Microservicios</h4>
+                    <p class="text-sm">Estilo arquitectónico que estructura una aplicación como una colección de servicios pequeños, autónomos y débilmente acoplados. <a href="https://aws.amazon.com/es/microservices/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Service Mesh</h4>
+                    <p class="text-sm">Capa de infraestructura dedicada para hacer que la comunicación entre servicios sea segura, rápida y fiable (Ej: Istio). <a href="https://www.redhat.com/es/topics/microservices/what-is-a-service-mesh" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Observability (Observabilidad)</h4>
+                    <p class="text-sm">Capacidad de entender el estado interno de un sistema a partir de sus salidas externas (Logs, Métricas, Trazas). No solo es monitorear, es preguntar. <a href="https://opentelemetry.io/docs/concepts/observability-primer/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="security" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#004AAD]">Seguridad y Redes</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Proteger los datos y la infraestructura es fundamental. Estos conceptos definen cómo se controla el acceso, se defiende contra amenazas y se garantiza la integridad de la información.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">VPN (Virtual Private Network)</h4>
+                    <p class="text-sm">Crea una conexión de red privada y cifrada a través de una red pública, como Internet, para navegar de forma segura y anónima. <a href="https://www.kaspersky.es/resource-center/definitions/what-is-a-vpn" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Firewall (Cortafuegos)</h4>
+                    <p class="text-sm">Sistema de seguridad que monitorea y controla el tráfico de red entrante y saliente basándose en reglas de seguridad predeterminadas. <a href="https://www.cisco.com/c/es_mx/products/security/firewalls/what-is-a-firewall.html" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Zero Trust (Confianza Cero)</h4>
+                    <p class="text-sm">Modelo de seguridad estratégico que asume que no se debe confiar en nada ni en nadie por defecto, ni siquiera dentro de la red corporativa. <a href="https://www.cloudflare.com/es-es/learning/security/glossary/what-is-zero-trust/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+                 <div class="p-4 bg-white rounded-lg shadow-sm term-card">
+                    <h4 class="font-semibold">Encryption (Cifrado)</h4>
+                    <p class="text-sm">Proceso de codificar información para que solo las partes autorizadas puedan acceder a ella, convirtiendo texto legible en texto ilegible. <a href="https://aws.amazon.com/es/what-is/encryption/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="data" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#004AAD]">Ciencia de Datos y Machine Learning</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Disciplina que extrae conocimiento y valor de los datos. Utiliza técnicas de Machine Learning (una rama de la IA) para crear sistemas que aprenden y predicen.</p>
+             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 <div class="bg-white rounded-lg shadow-md p-6 order-2 lg:order-1 term-card">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#0079C2]">Popularidad de Librerías de ML</h3>
+                    <p class="text-gray-600 mb-6 text-center">El ecosistema de Machine Learning está impulsado por potentes librerías de código abierto. TensorFlow y PyTorch dominan en Deep Learning, mientras que Scikit-learn es el estándar para ML tradicional.</p>
+                    <div class="chart-container h-80">
+                         <canvas id="mlLibrariesChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 order-1 lg:order-2 term-card">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#0079C2]">La Relación entre AI, ML y DL</h3>
+                    <p class="text-gray-600 mb-6 text-center">La Inteligencia Artificial es el conjunto de software que automatiza la aplicación de técnicas avanzada de ML y DL. El Machine Learning es una subdisciplina de la computación y la Statistical Learning Theory (en azul claro) que permite a las máquinas aprender de los datos. El Deep Learning (DP) es una técnica avanzada de Machine Learning (ML, en azul cielo) basada en redes neuronales profundas (D-ANN).</p>
+                    <div class="relative flex justify-center items-center h-64">
+                        <div class="absolute w-64 h-64 bg-[#7ED4E8] rounded-full flex items-center justify-center"><span class="font-bold text-white">AI</span></div>
+                        <div class="absolute w-44 h-44 bg-[#00A5E0] rounded-full flex items-center justify-center"><span class="font-bold text-white">ML</span></div>
+                        <div class="absolute w-24 h-24 bg-[#0079C2] rounded-full flex items-center justify-center"><span class="font-bold text-white">DL</span></div>
+                    </div>
+                </div>
+                 <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">ETL (Extract, Transform, Load)</h4>
+                        <p class="text-xs">Proceso para mover datos desde múltiples fuentes, transformarlos y cargarlos en un repositorio central. <a href="https://aws.amazon.com/es/what-is/etl/" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">EDA (Exploratory Data Analysis)</h4>
+                        <p class="text-xs">Análisis inicial de datos para descubrir patrones, anomalías y probar hipótesis con resúmenes estadísticos. <a href="https://en.wikipedia.org/wiki/Exploratory_data_analysis" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">NLP (Natural Language Processing)</h4>
+                        <p class="text-xs">Área de la IA que permite a las computadoras entender y procesar el lenguaje humano. <a href="https://www.ibm.com/cloud/learn/natural-language-processing" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                     <div class="p-3 bg-blue-50 rounded-lg term-card">
+                        <h4 class="font-semibold">CV (Computer Vision)</h4>
+                        <p class="text-xs">Área de la IA que entrena a las computadoras para interpretar y entender el mundo visual. <a href="https://www.ibm.com/topics/computer-vision" target="_blank" class="text-[#0079C2] hover:underline">Saber más</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#004AAD] text-white text-center p-6 mt-8">
+        <p>Glosario Interactivo de Terminología de las tecnologías de la información (IT) <br> Aplicación interactiva generada con asistencia de Google Gemini.<br><a href="https://luisgorozpe.github.io">Contactanos.</p>
+    </footer>
+
+    <script>
+        const tooltipTitleCallback = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        const cloudMarketCtx = document.getElementById('cloudMarketShareChart').getContext('2d');
+        new Chart(cloudMarketCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['AWS', 'Microsoft Azure', 'Google Cloud', 'Otros'],
+                datasets: [{
+                    label: 'Cuota de Mercado',
+                    data: [31, 25, 11, 33],
+                    backgroundColor: ['#00A5E0', '#0079C2', '#7ED4E8', '#E6F6F8'],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: tooltipTitleCallback.plugins.tooltip
+                }
+            }
+        });
+
+        const mlLibrariesCtx = document.getElementById('mlLibrariesChart').getContext('2d');
+        new Chart(mlLibrariesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['TensorFlow', 'PyTorch', 'Scikit-learn', 'Keras', 'XGBoost'],
+                datasets: [{
+                    label: 'Índice de Popularidad',
+                    data: [88, 85, 75, 60, 50],
+                    backgroundColor: '#0079C2',
+                    borderColor: '#004AAD',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                 scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: tooltipTitleCallback.plugins.tooltip
+                }
+            }
+        });
+
+        // Search filter logic
+        const searchInput = document.getElementById('search-input');
+        const termCards = document.querySelectorAll('.term-card');
+
+        searchInput.addEventListener('input', (event) => {
+            const query = event.target.value.toLowerCase().trim();
+
+            termCards.forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                if (cardText.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
