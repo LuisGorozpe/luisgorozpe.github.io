@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía: Análisis de Series de Tiempo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            line-height: 1;
+            color: #247BA0;
+            transform: translateY(50%);
+        }
+        .flow-card {
+            border: 2px solid #00B2FF;
+        }
+    </style>
+</head>
+<body class="bg-[#F0F4F8]">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-black text-[#247BA0] mb-2">Descifrando el Futuro: Una Guía Visual de Series de Tiempo</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Desde los fundamentos matemáticos hasta los modelos de Machine Learning de vanguardia, explore cómo predecir el mañana analizando el ayer.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <section class="md:col-span-2 lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-3xl font-bold text-[#247BA0] mb-4">1. ¿Qué es una Serie de Tiempo?</h2>
+                <p class="text-gray-700 mb-6">Una serie de tiempo es una secuencia de puntos de datos medidos en instantes sucesivos y espaciados uniformemente. Piense en las ventas diarias de una tienda, la temperatura por hora de una ciudad o el precio de cierre de una acción. El objetivo principal de su análisis es comprender los patrones subyacentes para poder hacer predicciones.</p>
+                <div class="chart-container">
+                    <canvas id="introChart"></canvas>
+                </div>
+            </section>
+            
+            <section class="md:col-span-2 lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-3xl font-bold text-[#247BA0] mb-4">2. El Fundamento: Estacionariedad</h2>
+                <p class="text-gray-700 mb-6">La estacionariedad es la propiedad más importante de una serie de tiempo. Una serie es estacionaria si sus propiedades estadísticas (media, varianza y autocovarianza) no cambian con el tiempo. La mayoría de los modelos clásicos requieren que la serie sea estacionaria para funcionar correctamente. A menudo, las series no estacionarias deben transformarse.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-center text-green-600 mb-2">Serie Estacionaria</h3>
+                        <p class="text-sm text-center text-gray-600 mb-4">(Media y varianza constantes)</p>
+                        <div class="chart-container h-64">
+                            <canvas id="stationaryChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-center text-red-600 mb-2">Serie No Estacionaria</h3>
+                        <p class="text-sm text-center text-gray-600 mb-4">(Tendencia ascendente, media no constante)</p>
+                        <div class="chart-container h-64">
+                            <canvas id="nonStationaryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-8 flex flex-col md:flex-row gap-4 justify-around">
+                    <div class="bg-[#FFE066]/20 p-4 rounded-lg border-l-4 border-[#FFE066]">
+                        <h4 class="font-bold text-[#247BA0]">Estacionariedad Débil</h4>
+                        <p class="text-gray-700 text-sm">La media es constante. La varianza es finita y constante. La covarianza entre dos puntos solo depende de la distancia entre ellos (el "lag"), no de su posición en el tiempo.</p>
+                    </div>
+                    <div class="bg-[#00B2FF]/20 p-4 rounded-lg border-l-4 border-[#00B2FF]">
+                        <h4 class="font-bold text-[#247BA0]">Estacionariedad Fuerte</h4>
+                        <p class="text-gray-700 text-sm">Una condición mucho más estricta. La distribución de probabilidad conjunta de cualquier conjunto de puntos de datos no cambia si se desplaza en el tiempo. Es rara en la práctica.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="md:col-span-2 lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-3xl font-bold text-[#247BA0] mb-4">3. Herramientas de Diagnóstico: ACF y PACF</h2>
+                <p class="text-gray-700 mb-6">Para identificar la estructura de una serie y los parámetros de los modelos ARIMA, usamos los correlogramas. La Función de Autocorrelación (ACF) mide la correlación de la serie consigo misma en diferentes desfases (lags). La Función de Autocorrelación Parcial (PACF) es similar, pero elimina las correlaciones indirectas.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-center text-[#247BA0] mb-4">Función de Autocorrelación (ACF)</h3>
+                        <div class="chart-container h-64">
+                            <canvas id="acfChart"></canvas>
+                        </div>
+                         <p class="text-xs text-center text-gray-500 mt-2">Muestra cómo la observación actual se correlaciona con las pasadas. Es clave para identificar el parámetro `q` (MA).</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-center text-[#247BA0] mb-4">Función de Autocorrelación Parcial (PACF)</h3>
+                        <div class="chart-container h-64">
+                            <canvas id="pacfChart"></canvas>
+                        </div>
+                         <p class="text-xs text-center text-gray-500 mt-2">Muestra la correlación directa entre una observación y sus lags. Ayuda a identificar el parámetro `p` (AR).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="lg:col-span-1 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-3xl font-bold text-[#247BA0] mb-4">4. Pruebas Estadísticas</h2>
+                <p class="text-gray-700 mb-6">La inspección visual es útil, pero las pruebas de hipótesis formales son necesarias para confirmar nuestras suposiciones.</p>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-blue-800">Pruebas de Estacionariedad</h4>
+                        <p class="text-sm text-blue-700"><span class="font-bold">Dickey-Fuller Aumentado (ADF):</span> H₀: La serie tiene una raíz unitaria (es no estacionaria).</p>
+                        <p class="text-sm text-blue-700"><span class="font-bold">KPSS:</span> H₀: La serie es estacionaria alrededor de una tendencia determinista.</p>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-red-800">Pruebas de Heterocedasticidad</h4>
+                        <p class="text-sm text-red-700"><span class="font-bold">Breusch-Pagan / White:</span> H₀: La varianza de los errores es constante (homocedasticidad).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-3xl font-bold text-[#247BA0] mb-4">5. Modelos Clásicos</h2>
+                <p class="text-gray-700 mb-6">Estos modelos han sido el pilar del pronóstico de series de tiempo durante décadas. Son robustos, interpretables y eficientes.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="chart-container h-64 md:h-auto">
+                        <canvas id="arimaChart"></canvas>
+                    </div>
+                    <div class="flex flex-col justify-center space-y-3">
+                        <div class="bg-[#F25F5C]/20 p-3 rounded-lg">
+                            <h4 class="font-bold text-[#F25F5C]">ARIMA y Variaciones</h4>
+                            <p class="text-sm text-gray-700">Combina Autoregresión (AR), Integración (I - diferenciación) y Medias Móviles (MA). Variantes como SARIMA manejan estacionalidad y ARIMAX incluye variables externas.</p>
+                        </div>
+                        <div class="bg-[#00F5D4]/20 p-3 rounded-lg">
+                            <h4 class="font-bold text-teal-700">Suavización Exponencial</h4>
+                            <p class="text-sm text-gray-700">Asigna pesos exponencialmente decrecientes a las observaciones pasadas. Holt-Winters es una variante popular que modela tendencia y estacionalidad.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="md:col-span-2 lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-3xl font-bold text-[#247BA0] mb-4">6. La Nueva Frontera: Machine Learning y Redes Neuronales</h2>
+                <p class="text-gray-700 mb-6">Mientras que los modelos clásicos son excelentes para patrones lineales, los modelos de Machine Learning (ML) pueden capturar relaciones complejas y no lineales en los datos. No siempre requieren estacionariedad y pueden integrar fácilmente múltiples características.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     <div class="bg-[#247BA0]/10 p-4 rounded-lg text-center">
+                        <div class="text-4xl mb-2">🧠</div>
+                        <h4 class="font-bold text-[#247BA0]">Redes Recurrentes (RNN)</h4>
+                        <p class="text-sm text-gray-600">Diseñadas para datos secuenciales, pero sufren del problema de desvanecimiento del gradiente.</p>
+                    </div>
+                     <div class="bg-[#247BA0]/10 p-4 rounded-lg text-center">
+                        <div class="text-4xl mb-2">💾</div>
+                        <h4 class="font-bold text-[#247BA0]">LSTM y GRU</h4>
+                        <p class="text-sm text-gray-600">Variantes de RNN con "memoria" que resuelven el problema del gradiente, permitiendo aprender dependencias a largo plazo.</p>
+                    </div>
+                     <div class="bg-[#247BA0]/10 p-4 rounded-lg text-center">
+                        <div class="text-4xl mb-2">🌳</div>
+                        <h4 class="font-bold text-[#247BA0]">Modelos de Boosting</h4>
+                        <p class="text-sm text-gray-600">Modelos como XGBoost o LightGBM pueden ser muy efectivos al crear características basadas en el tiempo (lags, medias móviles).</p>
+                    </div>
+                </div>
+                <div class="mt-6 chart-container">
+                    <canvas id="modelComparisonChart"></canvas>
+                </div>
+            </section>
+
+            <section class="md:col-span-2 lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+                 <h2 class="text-3xl font-bold text-[#247BA0] mb-4 text-center">7. Flujo de Trabajo Típico en un Proyecto</h2>
+                 <p class="text-gray-700 mb-8 max-w-2xl mx-auto text-center">Un proyecto de series de tiempo sigue un proceso estructurado, desde la exploración inicial hasta la puesta en producción del modelo final.</p>
+                 <div class="flex flex-col items-center space-y-4 md:space-y-0 md:flex-row md:justify-around md:items-stretch">
+                    
+                    <div class="flow-card text-center p-4 rounded-lg shadow-md flex-1 max-w-xs">
+                        <h4 class="font-bold text-[#247BA0]">1. Visualizar y Limpiar</h4>
+                        <p class="text-sm text-gray-600">Explorar datos, imputar faltantes, detectar outliers.</p>
+                    </div>
+                    
+                    <div class="flow-arrow hidden md:block">➔</div>
+                    <div class="flow-arrow block md:hidden">⬇</div>
+
+                    <div class="flow-card text-center p-4 rounded-lg shadow-md flex-1 max-w-xs">
+                        <h4 class="font-bold text-[#247BA0]">2. Estabilizar Varianza</h4>
+                        <p class="text-sm text-gray-600">Aplicar transformaciones como Box-Cox si es necesario.</p>
+                    </div>
+
+                    <div class="flow-arrow hidden md:block">➔</div>
+                    <div class="flow-arrow block md:hidden">⬇</div>
+
+                    <div class="flow-card text-center p-4 rounded-lg shadow-md flex-1 max-w-xs">
+                        <h4 class="font-bold text-[#247BA0]">3. Hacer Estacionaria</h4>
+                        <p class="text-sm text-gray-600">Diferenciar la serie hasta pasar las pruebas ADF/KPSS.</p>
+                    </div>
+                 </div>
+                 <div class="flex justify-center my-4">
+                     <div class="flow-arrow">⬇</div>
+                 </div>
+                 <div class="flex flex-col items-center space-y-4 md:space-y-0 md:flex-row md:justify-around md:items-stretch">
+                    <div class="flow-card text-center p-4 rounded-lg shadow-md flex-1 max-w-xs">
+                        <h4 class="font-bold text-[#247BA0]">4. Identificar Modelo</h4>
+                        <p class="text-sm text-gray-600">Analizar ACF/PACF para modelos ARIMA o preparar datos para ML.</p>
+                    </div>
+
+                    <div class="flow-arrow hidden md:block">➔</div>
+                    <div class="flow-arrow block md:hidden">⬇</div>
+
+                    <div class="flow-card text-center p-4 rounded-lg shadow-md flex-1 max-w-xs">
+                        <h4 class="font-bold text-[#247BA0]">5. Entrenar y Evaluar</h4>
+                        <p class="text-sm text-gray-600">Ajustar modelo y medir su rendimiento (MAE, RMSE, MAPE).</p>
+                    </div>
+
+                    <div class="flow-arrow hidden md:block">➔</div>
+                    <div class="flow-arrow block md:hidden">⬇</div>
+                    
+                    <div class="flow-card text-center p-4 rounded-lg shadow-md flex-1 max-w-xs">
+                        <h4 class="font-bold text-[#247BA0]">6. Pronosticar</h4>
+                        <p class="text-sm text-gray-600">Generar predicciones futuras y sus intervalos de confianza.</p>
+                    </div>
+                 </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const PALETTE = {
+            blue1: '#00B2FF',
+            blue2: '#247BA0',
+            red: '#F25F5C',
+            yellow: '#FFE066',
+            green: '#00F5D4'
+        };
+
+        function wrapLabels(labels, maxLength) {
+            return labels.map(label => {
+                if (typeof label === 'string' && label.length > maxLength) {
+                    const words = label.split(' ');
+                    const newLabels = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + word).length > maxLength) {
+                            newLabels.push(currentLine.trim());
+                            currentLine = '';
+                        }
+                        currentLine += word + ' ';
+                    });
+                    newLabels.push(currentLine.trim());
+                    return newLabels;
+                }
+                return label;
+            });
+        }
+        
+        const tooltipTitleCallback = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            ...tooltipTitleCallback
+        };
+
+        const introData = {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            datasets: [{
+                label: 'Ventas Mensuales (Miles)',
+                data: [22, 25, 27, 26, 30, 32, 35, 33, 38, 40, 42, 45],
+                borderColor: PALETTE.blue1,
+                backgroundColor: PALETTE.blue1 + '33',
+                fill: true,
+                tension: 0.4
+            }]
+        };
+        new Chart(document.getElementById('introChart'), { type: 'line', data: introData, options: chartOptions });
+
+        const stationaryData = {
+            labels: Array.from({ length: 50 }, (_, i) => i + 1),
+            datasets: [{
+                label: 'Ruido Blanco',
+                data: Array.from({ length: 50 }, () => Math.random() * 4 - 2),
+                borderColor: PALETTE.green,
+                backgroundColor: 'transparent',
+                pointRadius: 0,
+                borderWidth: 2
+            }]
+        };
+        new Chart(document.getElementById('stationaryChart'), { type: 'line', data: stationaryData, options: {...chartOptions, scales: {y: {min: -5, max: 5}}} });
+
+        const nonStationaryData = {
+            labels: Array.from({ length: 50 }, (_, i) => i + 1),
+            datasets: [{
+                label: 'Paseo Aleatorio con Tendencia',
+                data: Array.from({ length: 50 }, (_, i) => 0.2 * i + Math.random() * 2),
+                borderColor: PALETTE.red,
+                backgroundColor: 'transparent',
+                pointRadius: 0,
+                borderWidth: 2
+            }]
+        };
+        new Chart(document.getElementById('nonStationaryChart'), { type: 'line', data: nonStationaryData, options: chartOptions });
+        
+        const acfData = {
+            labels: Array.from({ length: 20 }, (_, i) => i + 1),
+            datasets: [{
+                label: 'Correlación',
+                data: Array.from({ length: 20 }, (_, i) => Math.exp(-i * 0.4) * (Math.random() > 0.1 ? 1 : -1)),
+                backgroundColor: PALETTE.blue2,
+            }]
+        };
+        new Chart(document.getElementById('acfChart'), { type: 'bar', data: acfData, options: {...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } } } });
+
+        const pacfData = {
+            labels: Array.from({ length: 20 }, (_, i) => i + 1),
+            datasets: [{
+                label: 'Correlación Parcial',
+                data: [0.8, 0.6, -0.4, 0.1, ...Array.from({ length: 16 }, () => Math.random() * 0.2 - 0.1)],
+                backgroundColor: PALETTE.blue2,
+            }]
+        };
+        new Chart(document.getElementById('pacfChart'), { type: 'bar', data: pacfData, options: {...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } } } });
+
+        const arimaData = {
+            labels: ['p (AR)', 'd (Integración)', 'q (MA)'],
+            datasets: [{
+                label: 'Componentes del Modelo ARIMA',
+                data: [35, 25, 40],
+                backgroundColor: [PALETTE.red, PALETTE.yellow, PALETTE.green],
+            }]
+        };
+        new Chart(document.getElementById('arimaChart'), { type: 'doughnut', data: arimaData, options: chartOptions });
+
+        const modelComparisonData = {
+            labels: wrapLabels(['ARIMA', 'Suavización Exponencial', 'LSTM / Redes Neuronales', 'Gradient Boosting (XGBoost)'], 20),
+            datasets: [
+                {
+                    label: 'Interpretabilidad',
+                    data: [9, 8, 3, 5],
+                    backgroundColor: PALETTE.blue1,
+                },
+                {
+                    label: 'Complejidad Computacional',
+                    data: [3, 2, 9, 7],
+                    backgroundColor: PALETTE.yellow,
+                },
+                {
+                    label: 'Potencial de Precisión (Datos Complejos)',
+                    data: [5, 4, 9, 8],
+                    backgroundColor: PALETTE.red,
+                }
+            ]
+        };
+        new Chart(document.getElementById('modelComparisonChart'), { type: 'bar', data: modelComparisonData, options: {...chartOptions, scales: { x: { stacked: true }, y: { stacked: true } } } });
+
+    </script>
+</body>
+</html>
