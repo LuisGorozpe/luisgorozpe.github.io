@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Interactivo de Series de Tiempo</title>
+    <!-- Chosen Palette: Soothing Greens & Creams -->
+    <!-- Application Structure Plan: La aplicación está diseñada como una herramienta de aprendizaje interactiva, no como un informe lineal. Utiliza una barra de navegación superior para un acceso rápido a las secciones clave: 'Introducción', 'Fundamentos', 'Diagnóstico', 'Modelos', 'Proceso' y un 'Laboratorio Interactivo'. Esta estructura modular permite al usuario explorar conceptos en el orden que prefiera, fomentando el aprendizaje no lineal. El 'Laboratorio' es el elemento central, diseñado para que el usuario "aprenda haciendo" al generar y visualizar series de tiempo con diferentes componentes. El objetivo es la exploración práctica y el refuerzo de conceptos teóricos a través de la interacción directa. -->
+    <!-- Visualization & Content Choices: 
+        - Fundamentos: Un gráfico de líneas interactivo para descomponer una serie en sus componentes (tendencia, estacionalidad, residuo) mediante botones. Objetivo: Organizar/Informar. Justificación: Permite al usuario ver visualmente cómo se combinan los elementos. Método: Chart.js con actualización de visibilidad de datasets.
+        - Diagnóstico: Dos gráficos de barras (ACF/PACF) que se actualizan dinámicamente al presionar botones (AR/MA). Objetivo: Comparar/Informar. Justificación: Demuestra de forma práctica los perfiles teóricos, lo que es clave para la identificación de modelos ARIMA. Método: Chart.js con reemplazo de datos.
+        - Modelos: Un gráfico de líneas que muestra datos reales y superpone pronósticos de diferentes modelos (seleccionables por el usuario). Objetivo: Comparar. Justificación: Ilustra las fortalezas y debilidades de cada enfoque de modelado en un escenario práctico. Método: Chart.js con datasets intercambiables.
+        - Laboratorio Interactivo: Un gráfico de líneas que se actualiza según las selecciones del usuario (tendencia, estacionalidad, ruido). Objetivo: Explorar/Relacionar. Justificación: Proporciona una experiencia práctica fundamental para entender cómo los componentes matemáticos crean los patrones que vemos. Método: Chart.js y generación de datos en JS.
+        - Todos los diagramas de flujo usan HTML/CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #F8F6F2;
+            color: #37474F;
+        }
+        h1, h2, h3, .nav-link {
+            font-family: 'Roboto Slab', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 45vh;
+        }
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #2E7D32;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1B5E20;
+        }
+        .btn-secondary {
+            background-color: #00695C;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #004D40;
+        }
+        .btn-active {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links-mobile {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            background-color: #004D40;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links-mobile.open {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F6F2]">
+
+    <header class="bg-[#004D40] text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h2 class="text-2xl font-bold">Análisis de Series de Tiempo</h2>
+            <nav class="hidden lg:flex space-x-6">
+                <a href="#intro" class="nav-link text-lg hover:text-[#D8A778] transition-colors">Introducción</a>
+                <a href="#fundamentos" class="nav-link text-lg hover:text-[#D8A778] transition-colors">Fundamentos</a>
+                <a href="#diagnostico" class="nav-link text-lg hover:text-[#D8A778] transition-colors">Diagnóstico</a>
+                <a href="#modelos" class="nav-link text-lg hover:text-[#D8A778] transition-colors">Modelos</a>
+                <a href="#proceso" class="nav-link text-lg hover:text-[#D8A778] transition-colors">Proceso Típico</a>
+                <a href="#laboratorio" class="nav-link text-lg font-bold hover:text-[#D8A778] transition-colors">Laboratorio Interactivo</a>
+            </nav>
+            <button id="menu-toggle" class="lg:hidden p-2 rounded-md hover:bg-[#00695C]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+            </button>
+        </div>
+        <nav id="mobile-nav-links" class="nav-links-mobile lg:hidden">
+            <a href="#intro" class="nav-link text-lg hover:text-[#D8A778] transition-colors px-4 py-2">Introducción</a>
+            <a href="#fundamentos" class="nav-link text-lg hover:text-[#D8A778] transition-colors px-4 py-2">Fundamentos</a>
+            <a href="#diagnostico" class="nav-link text-lg hover:text-[#D8A778] transition-colors px-4 py-2">Diagnóstico</a>
+            <a href="#modelos" class="nav-link text-lg hover:text-[#D8A778] transition-colors px-4 py-2">Modelos</a>
+            <a href="#proceso" class="nav-link text-lg hover:text-[#D8A778] transition-colors px-4 py-2">Proceso Típico</a>
+            <a href="#laboratorio" class="nav-link text-lg font-bold hover:text-[#D8A778] transition-colors px-4 py-2">Laboratorio Interactivo</a>
+        </nav>
+    </header>
+
+    <main class="main-content w-full p-6 lg:p-10">
+
+        <section id="intro" class="min-h-screen flex flex-col justify-center items-center text-center pt-16">
+            <h1 class="text-5xl md:text-7xl font-bold text-[#004D40] leading-tight">Análisis Interactivo de Series de Tiempo</h1>
+            <p class="text-xl text-gray-600 mt-4 max-w-3xl mx-auto">Una aplicación para explorar, visualizar y comprender los conceptos que nos permiten modelar el tiempo y predecir el futuro.</p>
+            <a href="#fundamentos" class="mt-8 mx-auto px-8 py-3 rounded-full text-lg font-semibold btn btn-primary">Comenzar Exploración</a>
+        </section>
+
+        <section id="fundamentos" class="py-20">
+            <h2 class="text-4xl font-bold text-[#004D40] mb-2">Fundamentos Esenciales</h2>
+            <p class="text-lg text-gray-600 mb-8">Toda serie de tiempo se puede descomponer en partes que revelan su estructura subyacente. Interactúe con el gráfico para aislar cada componente.</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="chart-container mb-6">
+                    <canvas id="componentsChart"></canvas>
+                </div>
+                <div id="components-controls" class="flex flex-wrap justify-center gap-4">
+                    <button data-component="serie" class="btn btn-secondary px-4 py-2 rounded-md btn-active">Serie Completa</button>
+                    <button data-component="tendencia" class="btn btn-secondary px-4 py-2 rounded-md">Tendencia</button>
+                    <button data-component="estacionalidad" class="btn btn-secondary px-4 py-2 rounded-md">Estacionalidad</button>
+                    <button data-component="residuo" class="btn btn-secondary px-4 py-2 rounded-md">Residuo (Ruido)</button>
+                </div>
+            </div>
+             <h3 class="text-3xl font-bold text-[#004D40] mt-16 mb-6">El Concepto Clave: Estacionariedad</h3>
+             <p class="text-lg text-gray-600 mb-8">Un modelo clásico requiere que la media y la varianza de la serie no cambien en el tiempo. Observe la diferencia y cómo la "diferenciación" puede estabilizar una serie.</p>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                     <h4 class="text-xl font-bold text-center text-red-600 mb-2">No Estacionaria (con tendencia)</h4>
+                     <div class="chart-container h-64">
+                         <canvas id="nonStatChart"></canvas>
+                     </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                     <h4 class="text-xl font-bold text-center text-green-600 mb-2">Transformada a Estacionaria (diferenciada)</h4>
+                     <div class="chart-container h-64">
+                         <canvas id="statChart"></canvas>
+                     </div>
+                </div>
+             </div>
+        </section>
+
+        <section id="diagnostico" class="py-20">
+            <h2 class="text-4xl font-bold text-[#004D40] mb-2">Herramientas de Diagnóstico</h2>
+            <p class="text-lg text-gray-600 mb-8">Las funciones de Autocorrelación (ACF) y Autocorrelación Parcial (PACF) son como los rayos X de una serie de tiempo. Nos ayudan a identificar los parámetros $p$ y $q$ de los modelos ARIMA. Seleccione un proceso para ver su firma ACF/PACF teórica.</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                 <div id="diag-controls" class="flex flex-wrap justify-center gap-4 mb-6">
+                    <button data-process="ar" class="btn btn-primary px-4 py-2 rounded-md btn-active">Proceso AR(1)</button>
+                    <button data-process="ma" class="btn btn-primary px-4 py-2 rounded-md">Proceso MA(1)</button>
+                    <button data-process="arma" class="btn btn-primary px-4 py-2 rounded-md">Proceso ARMA(1,1)</button>
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div>
+                        <h3 class="text-xl font-bold text-center text-[#00695C] mb-4">ACF</h3>
+                        <div class="chart-container h-64">
+                            <canvas id="acfDiagChart"></canvas>
+                        </div>
+                     </div>
+                     <div>
+                        <h3 class="text-xl font-bold text-center text-[#00695C] mb-4">PACF</h3>
+                        <div class="chart-container h-64">
+                            <canvas id="pacfDiagChart"></canvas>
+                        </div>
+                     </div>
+                 </div>
+                 <p id="diag-explanation" class="text-center mt-4 text-gray-700 italic"></p>
+            </div>
+        </section>
+
+        <section id="modelos" class="py-20">
+            <h2 class="text-4xl font-bold text-[#004D40] mb-2">El Universo de Modelos</h2>
+            <p class="text-lg text-gray-600 mb-8">Desde los clásicos y robustos ARIMA hasta las potentes redes neuronales, cada familia de modelos tiene sus fortalezas. Compare sus pronósticos en un conjunto de datos de ejemplo.</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="chart-container mb-6">
+                    <canvas id="modelsChart"></canvas>
+                </div>
+                <div id="models-controls" class="flex flex-wrap justify-center gap-4">
+                    <button data-model="arima" class="btn btn-secondary px-4 py-2 rounded-md btn-active">Pronóstico ARIMA</button>
+                    <button data-model="ets" class="btn btn-secondary px-4 py-2 rounded-md">Pronóstico Holt-Winters (ETS)</button>
+                    <button data-model="ml" class="btn btn-secondary px-4 py-2 rounded-md">Pronóstico Red Neuronal (LSTM)</button>
+                </div>
+                 <p id="model-explanation" class="text-center mt-4 text-gray-700 italic max-w-2xl mx-auto"></p>
+            </div>
+        </section>
+        
+        <section id="proceso" class="py-20">
+             <h2 class="text-4xl font-bold text-[#004D40] mb-8 text-center">Proceso Típico de Modelado</h2>
+             <div class="relative">
+                 <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-[#D8A778]/50 -translate-y-1/2"></div>
+                 <div class="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 relative">
+                     <div class="process-step">
+                         <div class="icon">1</div>
+                         <h3 class="title">Visualizar</h3>
+                         <p class="desc">Entender patrones, outliers y datos faltantes.</p>
+                     </div>
+                     <div class="process-step">
+                         <div class="icon">2</div>
+                         <h3 class="title">Preprocesar</h3>
+                         <p class="desc">Transformar y hacer la serie estacionaria (diferenciar).</p>
+                     </div>
+                     <div class="process-step">
+                         <div class="icon">3</div>
+                         <h3 class="title">Identificar</h3>
+                         <p class="desc">Usar ACF/PACF para proponer modelos candidatos.</p>
+                     </div>
+                     <div class="process-step">
+                         <div class="icon">4</div>
+                         <h3 class="title">Estimar</h3>
+                         <p class="desc">Ajustar los modelos a los datos de entrenamiento.</p>
+                     </div>
+                     <div class="process-step">
+                         <div class="icon">5</div>
+                         <h3 class="title">Validar</h3>
+                         <p class="desc">Evaluar el rendimiento en datos de prueba y diagnosticar residuos.</p>
+                     </div>
+                 </div>
+             </div>
+             <style>
+                 .process-step { text-align: center; max-width: 180px; position: relative; }
+                 .process-step .icon { width: 60px; height: 60px; background: #00695C; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem; border: 4px solid #F8F6F2;}
+                 .process-step .title { font-size: 1.25rem; font-weight: bold; color: #004D40; }
+                 .process-step .desc { font-size: 0.9rem; color: #37474F; }
+             </style>
+        </section>
+
+        <section id="laboratorio" class="py-20">
+            <h2 class="text-4xl font-bold text-[#004D40] mb-2">Laboratorio Interactivo</h2>
+            <p class="text-lg text-gray-600 mb-8">¡Aprenda haciendo! Construya su propia serie de tiempo. Active o desactive los componentes y observe cómo cambia el gráfico y sus propiedades estadísticas al instante.</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="chart-container mb-6">
+                    <canvas id="labChart"></canvas>
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div id="lab-controls" class="flex flex-col space-y-4">
+                        <label class="flex items-center space-x-3 text-lg">
+                            <input type="checkbox" data-lab="tendencia" class="form-checkbox h-5 w-5 text-[#2E7D32] rounded">
+                            <span>Añadir Tendencia Lineal</span>
+                        </label>
+                        <label class="flex items-center space-x-3 text-lg">
+                            <input type="checkbox" data-lab="estacionalidad" class="form-checkbox h-5 w-5 text-[#2E7D32] rounded">
+                            <span>Añadir Estacionalidad (Seno)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 text-lg">
+                            <input type="checkbox" data-lab="ruido" class="form-checkbox h-5 w-5 text-[#2E7D32] rounded" checked>
+                            <span>Añadir Ruido Aleatorio</span>
+                        </label>
+                    </div>
+                     <div class="bg-gray-50 p-4 rounded-lg">
+                         <h4 class="text-xl font-bold text-[#004D40] mb-2">Propiedades de la Serie Generada</h4>
+                         <div class="space-y-2 text-lg">
+                            <p><strong>Media:</strong> <span id="lab-mean" class="font-mono">0.00</span></p>
+                            <p><strong>Varianza:</strong> <span id="lab-variance" class="font-mono">0.00</span></p>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        </section>
+
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const chartJsConfig = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    font: { family: "'Source Sans Pro', sans-serif" }
+                }
+            },
+            tooltip: {
+                titleFont: { family: "'Roboto Slab', serif" },
+                bodyFont: { family: "'Source Sans Pro', sans-serif" },
+            }
+        },
+        scales: {
+            x: { ticks: { font: { family: "'Source Sans Pro', sans-serif" } } },
+            y: { ticks: { font: { family: "'Source Sans Pro', sans-serif" } } }
+        }
+    };
+
+    // --- Section: Fundamentos ---
+    const T = 100;
+    const time = Array.from({ length: T }, (_, i) => i);
+    const trendData = time.map(t => 0.1 * t);
+    const seasonalityData = time.map(t => 2 * Math.sin(2 * Math.PI * t / 12));
+    const noiseData = Array.from({ length: T }, () => (Math.random() - 0.5) * 2);
+    const seriesData = time.map((_, i) => trendData[i] + seasonalityData[i] + noiseData[i]);
+
+    const componentsChartCtx = document.getElementById('componentsChart').getContext('2d');
+    const componentsChart = new Chart(componentsChartCtx, {
+        type: 'line',
+        data: {
+            labels: time,
+            datasets: [
+                { label: 'Serie Completa', data: seriesData, borderColor: '#2E7D32', borderWidth: 3, pointRadius: 0, hidden: false },
+                { label: 'Tendencia', data: trendData, borderColor: '#00695C', borderWidth: 2, pointRadius: 0, borderDash: [5, 5], hidden: true },
+                { label: 'Estacionalidad', data: seasonalityData, borderColor: '#D8A778', borderWidth: 2, pointRadius: 0, borderDash: [5, 5], hidden: true },
+                { label: 'Residuo', data: noiseData, borderColor: '#B0BEC5', borderWidth: 1, pointRadius: 0, hidden: true }
+            ]
+        },
+        options: chartJsConfig
+    });
+
+    const componentsControls = document.getElementById('components-controls');
+    componentsControls.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const component = e.target.dataset.component;
+            componentsControls.querySelectorAll('button').forEach(btn => btn.classList.remove('btn-active'));
+            e.target.classList.add('btn-active');
+            
+            const visibility = { serie: false, tendencia: false, estacionalidad: false, residuo: false };
+            if (component === 'serie') visibility.serie = true;
+            if (component === 'tendencia') visibility.tendencia = true;
+            if (component === 'estacionalidad') visibility.estacionalidad = true;
+            if (component === 'residuo') visibility.residuo = true;
+            
+            componentsChart.data.datasets.forEach((ds, i) => {
+                ds.hidden = !Object.values(visibility)[i];
+            });
+            componentsChart.update();
+        }
+    });
+
+    const nonStatData = Array.from({length: 50}, (_, i) => i * 0.5 + Math.random() * 5);
+    const statData = nonStatData.slice(1).map((val, i) => val - nonStatData[i]);
+    new Chart('nonStatChart', { type: 'line', data: { labels: Array.from({length:50},(_,i)=>i), datasets: [{ data: nonStatData, borderColor: '#C62828', pointRadius: 0 }] }, options: {...chartJsConfig, plugins: {legend:{display:false}}}});
+    new Chart('statChart', { type: 'line', data: { labels: Array.from({length:49},(_,i)=>i), datasets: [{ data: statData, borderColor: '#2E7D32', pointRadius: 0 }] }, options: {...chartJsConfig, plugins: {legend:{display:false}}}});
+
+    // --- Section: Diagnóstico ---
+    const diagData = {
+        ar: { acf: [1, 0.8, 0.64, 0.51, 0.41, 0.33, 0.26], pacf: [0.8, 0, 0, 0, 0, 0, 0], explanation: "Un proceso AR(1) tiene una ACF que decae exponencialmente y una PACF que se corta después del primer lag." },
+        ma: { acf: [0.7, 0, 0, 0, 0, 0, 0], pacf: [1, -0.6, 0.45, -0.3, 0.2, -0.15, 0.1], explanation: "Un proceso MA(1) tiene una ACF que se corta después del primer lag y una PACF que decae." },
+        arma: { acf: [1, 0.9, 0.75, 0.6, 0.5, 0.4, 0.3], pacf: [1, 0.7, 0.5, 0.35, 0.2, 0.1, 0.05], explanation: "Un proceso ARMA(1,1) tiene tanto la ACF como la PACF que decaen gradualmente." },
+    };
+    const acfDiagChart = new Chart('acfDiagChart', { type: 'bar', data: { labels: Array.from({length:7},(_,i)=>i+1), datasets: [{ data: [], backgroundColor: '#00695C' }] }, options: {...chartJsConfig, plugins: {legend:{display:false}}}});
+    const pacfDiagChart = new Chart('pacfDiagChart', { type: 'bar', data: { labels: Array.from({length:7},(_,i)=>i+1), datasets: [{ data: [], backgroundColor: '#00695C' }] }, options: {...chartJsConfig, plugins: {legend:{display:false}}}});
+    
+    const diagControls = document.getElementById('diag-controls');
+    const diagExplanation = document.getElementById('diag-explanation');
+    function updateDiagCharts(process) {
+        diagControls.querySelectorAll('button').forEach(btn => btn.classList.toggle('btn-active', btn.dataset.process === process));
+        acfDiagChart.data.datasets[0].data = diagData[process].acf;
+        pacfDiagChart.data.datasets[0].data = diagData[process].pacf;
+        diagExplanation.textContent = diagData[process].explanation;
+        acfDiagChart.update();
+        pacfDiagChart.update();
+    }
+    diagControls.addEventListener('click', e => { if (e.target.tagName === 'BUTTON') updateDiagCharts(e.target.dataset.process); });
+    updateDiagCharts('ar');
+
+    // --- Section: Modelos ---
+    const modelActualData = seriesData.slice(0, 80);
+    const modelForecastData = {
+        arima: { data: [7.9, 8.1, 8.3, 8.5, 8.6, 8.8, 8.9, 9.1, 9.2, 9.4, 9.5, 9.7, 9.8, 9.9, 10.1, 10.2, 10.3, 10.5, 10.6, 10.7], explanation: "ARIMA es bueno capturando tendencias lineales y patrones de autocorrelación, pero puede fallar con dinámicas no lineales complejas."},
+        ets: { data: [7.8, 8.0, 8.2, 8.4, 8.5, 8.7, 8.8, 9.0, 9.2, 9.3, 9.4, 9.6, 9.7, 9.8, 10.0, 10.1, 10.3, 10.4, 10.5, 10.6], explanation: "El suavizado exponencial (Holt-Winters) es excelente para modelar explícitamente la tendencia y la estacionalidad, siendo muy robusto y rápido."},
+        ml: { data: seriesData.slice(80).map(v => v + (Math.random()-0.5)*0.5), explanation: "Las redes neuronales como LSTM pueden aprender relaciones no lineales y dependencias a largo plazo, a menudo logrando mayor precisión a cambio de más datos y complejidad computacional." }
+    };
+    const modelsChart = new Chart('modelsChart', {
+        type: 'line',
+        data: {
+            labels: time,
+            datasets: [
+                { label: 'Datos Reales', data: seriesData, borderColor: '#37474F', borderWidth: 2, pointRadius: 0, tension: 0.1 },
+                { label: 'Pronóstico', data: [...new Array(80).fill(null), ...modelForecastData.arima.data], borderColor: '#2E7D32', borderWidth: 3, pointRadius: 0, borderDash: [5, 5] }
+            ]
+        },
+        options: chartJsConfig
+    });
+    const modelsControls = document.getElementById('models-controls');
+    const modelExplanation = document.getElementById('model-explanation');
+    function updateModelChart(model) {
+        modelsControls.querySelectorAll('button').forEach(btn => btn.classList.toggle('btn-active', btn.dataset.model === model));
+        modelsChart.data.datasets[1].data = [...new Array(80).fill(null), ...modelForecastData[model].data];
+        modelExplanation.textContent = modelForecastData[model].explanation;
+        modelsChart.update();
+    }
+    modelsControls.addEventListener('click', e => { if (e.target.tagName === 'BUTTON') updateModelChart(e.target.dataset.model); });
+    updateModelChart('arima');
+
+    // --- Section: Laboratorio ---
+    const labChart = new Chart('labChart', { type: 'line', data: { labels: time, datasets: [{ data: [], borderColor: '#00695C', pointRadius: 0 }] }, options: {...chartJsConfig, plugins: {legend:{display:false}}}});
+    const labControls = document.getElementById('lab-controls');
+    const labMeanEl = document.getElementById('lab-mean');
+    const labVarianceEl = document.getElementById('lab-variance');
+
+    function updateLabChart() {
+        const hasTrend = document.querySelector('[data-lab="tendencia"]').checked;
+        const hasSeason = document.querySelector('[data-lab="estacionalidad"]').checked;
+        const hasNoise = document.querySelector('[data-lab="ruido"]').checked;
+
+        const labData = time.map(t => {
+            let value = 0;
+            if (hasTrend) value += 0.2 * t;
+            if (hasSeason) value += 5 * Math.sin(2 * Math.PI * t / 20);
+            if (hasNoise) value += (Math.random() - 0.5) * 4;
+            return value;
+        });
+
+        labChart.data.datasets[0].data = labData;
+        labChart.update();
+        
+        const mean = labData.reduce((a, b) => a + b, 0) / labData.length;
+        const variance = labData.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / labData.length;
+
+        labMeanEl.textContent = mean.toFixed(2);
+        labVarianceEl.textContent = variance.toFixed(2);
+    }
+    labControls.addEventListener('change', updateLabChart);
+    updateLabChart();
+
+    // --- Mobile Menu ---
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileNavLinks = document.getElementById('mobile-nav-links');
+    menuToggle.addEventListener('click', () => {
+        mobileNavLinks.classList.toggle('open');
+    });
+    mobileNavLinks.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (mobileNavLinks.classList.contains('open')) {
+                mobileNavLinks.classList.remove('open');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
