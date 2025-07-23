@@ -1,0 +1,567 @@
+<!-- Chosen Palette: Soothing & Professional (Custom: #FDF8F0, #3D352E, #A88B67, #C9BBA7) -->
+<!-- Application Structure Plan: The SPA is designed as an interactive dashboard with a sticky top navigation bar (Fundamentos, Metodología, Modelos, Herramientas, Ejemplo Práctico) to allow non-linear exploration. This structure empowers users to either follow a logical learning path or jump directly to sections of interest, which is more effective for both novice and experienced audiences than a static, linear report. Key interactions include toggling chart data to compare concepts directly (e.g., stationary vs. non-stationary), filtering content with tabs to reduce cognitive load (e.g., model families), and manipulating parameters (e.g., forecast periods) to make abstract concepts tangible. This architecture transforms passive reading into active learning. -->
+<!-- Visualization & Content Choices: 
+- Stationarity Concept -> Goal: Compare -> Viz: Single Line Chart -> Interaction: JS-powered buttons to toggle between datasets -> Justification: Directly switching between "stationary" and "non-stationary" series on the same axes is more impactful for learning than showing two separate static charts. (Chart.js/Canvas)
+- Model Families -> Goal: Organize/Compare -> Viz: Cards with text and a chart (Donut, Line, Radar) -> Interaction: JS-powered tabs (Clásicos, Suavizado, ML) to filter content -> Justification: Manages complexity by revealing one model family at a time, preventing user overwhelm and focusing attention. (Chart.js/Canvas)
+- Box-Jenkins -> Goal: Organize -> Viz: HTML/CSS Diagram -> Interaction: CSS hover effects on steps -> Justification: Provides a subtle interactive feedback loop without over-complicating a clear, established process diagram. (HTML/CSS)
+- Forecasting -> Goal: Change/Explore -> Viz: Line chart with forecast -> Interaction: JS-powered slider to change `n_periods` and dynamically update the forecast on the chart -> Justification: Makes the forecasting process tangible and allows for "what-if" analysis, a core aspect of practical application. (Chart.js/Canvas)
+- Python Libraries -> Goal: Organize -> Viz: List -> Interaction: Redesigned into a responsive grid of cards -> Justification: Improves scannability and visual appeal over a simple list, making resources easier to find. (HTML/CSS) -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación Interactiva de Series de Tiempo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FDF8F0;
+            color: #3D352E;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 45vh;
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #A88B67;
+            border-bottom-color: #A88B67;
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-button.active {
+            background-color: #A88B67;
+            color: #FFFFFF;
+        }
+        .code-block {
+            background-color: #3D352E;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+        }
+        .code-block .keyword { color: #e5b3fe; }
+        .code-block .comment { color: #9E9E9E; }
+        .code-block .string { color: #A8E6CF; }
+        .code-block .number { color: #FFD54F; }
+        .code-block .function { color: #81D4FA; }
+        .flow-step {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-[#FDF8F0] p-4 shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-[#A88B67]">Análisis de Series de Tiempo</h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#fundamentos" class="nav-link font-semibold pb-1">Fundamentos</a>
+                <a href="#metodologia" class="nav-link font-semibold pb-1">Metodología</a>
+                <a href="#modelos" class="nav-link font-semibold pb-1">Modelos</a>
+                <a href="#herramientas" class="nav-link font-semibold pb-1">Herramientas</a>
+                <a href="#ejemplo" class="nav-link font-semibold pb-1">Ejemplo Práctico</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 mt-4">
+
+        <section id="fundamentos" class="scroll-mt-20 mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black text-[#3D352E] mb-2">Fundamentos Esenciales</h2>
+                <p class="text-lg text-[#A88B67] max-w-3xl mx-auto">Esta sección explora los pilares del análisis de series de tiempo. Interactúe con los gráficos y las tarjetas para comprender los conceptos de estacionariedad y autocorrelación, que son cruciales para un modelado preciso.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4">Estacionariedad Interactiva</h3>
+                    <p class="mb-4 text-gray-600">Una serie es estacionaria si su media y varianza son constantes en el tiempo. Un comportamiento estable es más fácil de predecir. Use los botones para visualizar la diferencia.</p>
+                    <div class="text-center mb-4">
+                        <button id="showStationaryBtn" class="tab-button bg-gray-200 text-gray-700 py-2 px-4 rounded-l-lg">Estacionaria</button>
+                        <button id="showNonStationaryBtn" class="tab-button bg-gray-200 text-gray-700 py-2 px-4 rounded-r-lg">No Estacionaria</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="stationarityChart"></canvas>
+                    </div>
+                    <p id="stationarityDesc" class="text-center text-sm text-gray-500 mt-2"></p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4">Autocorrelación (ACF & PACF)</h3>
+                    <p class="mb-4 text-gray-600">Las funciones ACF y PACF nos ayudan a "ver" la memoria de una serie. Sus patrones son claves para identificar los parámetros (p, q) de los modelos ARIMA.</p>
+                    <div class="chart-container">
+                        <canvas id="acfPacfChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-2">Patrones típicos para un proceso AR(2).</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg lg:col-span-2">
+                     <h3 class="text-2xl font-bold mb-4 text-center">Pruebas Estadísticas de Diagnóstico</h3>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border-l-4 border-[#A88B67] pl-4">
+                            <h4 class="font-bold text-lg">Pruebas de Estacionariedad</h4>
+                            <p class="text-gray-600">Confirman matemáticamente lo que vemos en el gráfico.</p>
+                            <ul class="list-disc list-inside mt-2 text-gray-600">
+                                <li><strong>Dickey-Fuller Aumentada (ADF):</strong> Busca una "raíz unitaria" (no estacionariedad).</li>
+                                <li><strong>KPSS:</strong> La hipótesis contraria; asume estacionariedad.</li>
+                            </ul>
+                        </div>
+                        <div class="border-l-4 border-[#C9BBA7] pl-4">
+                            <h4 class="font-bold text-lg">Pruebas de Heterocedasticidad</h4>
+                            <p class="text-gray-600">Verifican si la volatilidad (varianza) cambia con el tiempo.</p>
+                             <ul class="list-disc list-inside mt-2 text-gray-600">
+                                <li><strong>Prueba de White:</strong> Una prueba general y robusta.</li>
+                                <li><strong>Breusch-Pagan:</strong> Comprueba si la volatilidad depende de otras variables.</li>
+                            </ul>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="metodologia" class="scroll-mt-20 mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black text-[#3D352E] mb-2">Metodología Box-Jenkins</h2>
+                <p class="text-lg text-[#A88B67] max-w-3xl mx-auto">Un flujo de trabajo iterativo y riguroso para construir el mejor modelo ARIMA posible. Pase el cursor sobre cada paso para ver su propósito en este proceso fundamental del modelado clásico.</p>
+            </div>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <div class="flow-step bg-white p-6 rounded-lg text-center shadow-lg w-64 border-b-4 border-[#C9BBA7]">
+                    <div class="text-4xl mb-2">1️⃣</div>
+                    <h4 class="font-bold text-lg">Identificación</h4>
+                    <p class="text-sm text-gray-600">Analizar ACF/PACF y realizar pruebas para proponer órdenes (p,d,q).</p>
+                </div>
+                <div class="text-[#A88B67] text-4xl hidden md:block">&rarr;</div>
+                <div class="text-[#A88B67] text-4xl md:hidden">&darr;</div>
+                <div class="flow-step bg-white p-6 rounded-lg text-center shadow-lg w-64 border-b-4 border-[#C9BBA7]">
+                    <div class="text-4xl mb-2">2️⃣</div>
+                    <h4 class="font-bold text-lg">Estimación</h4>
+                    <p class="text-sm text-gray-600">Calcular los coeficientes del modelo usando máxima verosimilitud.</p>
+                </div>
+                <div class="text-[#A88B67] text-4xl hidden md:block">&rarr;</div>
+                <div class="text-[#A88B67] text-4xl md:hidden">&darr;</div>
+                <div class="flow-step bg-white p-6 rounded-lg text-center shadow-lg w-64 border-b-4 border-[#C9BBA7]">
+                    <div class="text-4xl mb-2">3️⃣</div>
+                    <h4 class="font-bold text-lg">Diagnóstico</h4>
+                    <p class="text-sm text-gray-600">Verificar que los residuos sean ruido blanco. Si no, iterar.</p>
+                </div>
+                 <div class="text-[#A88B67] text-4xl hidden md:block">&rarr;</div>
+                 <div class="text-[#A88B67] text-4xl md:hidden">&darr;</div>
+                <div class="flow-step bg-[#A88B67] text-white p-6 rounded-lg text-center shadow-lg w-64">
+                    <div class="text-4xl mb-2">4️⃣</div>
+                    <h4 class="font-bold text-lg">Pronóstico</h4>
+                    <p class="text-sm">Usar el modelo validado para predecir valores futuros.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="modelos" class="scroll-mt-20 mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black text-[#3D352E] mb-2">Explorador de Modelos</h2>
+                <p class="text-lg text-[#A88B67] max-w-3xl mx-auto">Desde los modelos estadísticos clásicos hasta las redes neuronales profundas. Use las pestañas para navegar entre las diferentes familias de modelos y descubrir sus características y casos de uso.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex justify-center border-b border-gray-200 mb-6">
+                    <button data-tab="clasicos" class="model-tab tab-button py-2 px-6 font-semibold text-gray-600 active">Clásicos</button>
+                    <button data-tab="suavizado" class="model-tab tab-button py-2 px-6 font-semibold text-gray-600">Suavizado</button>
+                    <button data-tab="ml" class="model-tab tab-button py-2 px-6 font-semibold text-gray-600">Machine Learning</button>
+                </div>
+                <div id="modelContent" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                </div>
+            </div>
+        </section>
+
+        <section id="herramientas" class="scroll-mt-20 mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black text-[#3D352E] mb-2">Caja de Herramientas de Python</h2>
+                <p class="text-lg text-[#A88B67] max-w-3xl mx-auto">Un ecosistema robusto de librerías de código abierto hace que el análisis de series de tiempo en Python sea accesible y potente. Aquí están las herramientas más populares y enlaces para empezar a usarlas.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div class="bg-white p-5 rounded-lg shadow-lg flex flex-col">
+                    <h3 class="font-bold text-xl text-[#3D352E]">statsmodels</h3>
+                    <p class="text-gray-600 flex-grow my-2">La base para modelos estadísticos en Python, incluyendo ARIMA, VAR, y ETS.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <a href="https://www.statsmodels.org/stable/tsa.html" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">Docs</a>
+                        <a href="https://www.machinelearningplus.com/time-series/time-series-analysis-python/" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">Tutorial</a>
+                    </div>
+                </div>
+                 <div class="bg-white p-5 rounded-lg shadow-lg flex flex-col">
+                    <h3 class="font-bold text-xl text-[#3D352E]">pmdarima</h3>
+                    <p class="text-gray-600 flex-grow my-2">Implementa <code>auto_arima</code> para encontrar automáticamente los mejores parámetros ARIMA, ahorrando tiempo.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <a href="https://alkaline-ml.com/pmdarima/" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">Docs</a>
+                        <a href="https://youtu.be/lKUDBXeOsBQ?si=MWsAslwWFsTt4vJE" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">YouTube</a>
+                    </div>
+                </div>
+                 <div class="bg-white p-5 rounded-lg shadow-lg flex flex-col">
+                    <h3 class="font-bold text-xl text-[#3D352E]">Prophet</h3>
+                    <p class="text-gray-600 flex-grow my-2">Librería de Facebook para pronósticos a escala, robusta a datos faltantes y estacionalidad múltiple.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <a href="https://facebook.github.io/prophet/docs/quick_start.html" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">Docs</a>
+                        <a href="https://youtu.be/eq7_3HA7QQI?si=eED52LwL18GKNgp_" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">YouTube</a>
+                    </div>
+                </div>
+                 <div class="bg-white p-5 rounded-lg shadow-lg flex flex-col">
+                    <h3 class="font-bold text-xl text-[#3D352E]">Darts</h3>
+                    <p class="text-gray-600 flex-grow my-2">Unifica modelos clásicos y de ML (incluyendo Transformers) bajo una API similar a Scikit-learn.</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        <a href="https://unit8co.github.io/darts/" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">Docs</a>
+                        <a href="https://youtu.be/cKJKHGlbSi4?si=9-JPQFr71hZLOJY4" target="_blank" class="bg-[#A88B67] text-white px-3 py-1 rounded-full text-sm hover:bg-[#3D352E] transition-colors">YouTube</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ejemplo" class="scroll-mt-20 mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black text-[#3D352E] mb-2">Laboratorio de Pronóstico</h2>
+                <p class="text-lg text-[#A88B67] max-w-3xl mx-auto">Vea un modelo en acción. El código ajusta un modelo a datos sintéticos y el gráfico muestra el resultado. Use el deslizador para cambiar el horizonte del pronóstico y observe cómo se actualiza la predicción.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold mb-3">Código: `auto_arima`</h3>
+                    <div class="code-block text-sm">
+<pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pmdarima <span class="keyword">as</span> pm
+
+<span class="comment"># Datos sintéticos</span>
+np.random.seed(42)
+data = np.random.randn(100).cumsum()
+
+<span class="comment"># Encontrar el mejor modelo ARIMA</span>
+model = pm.auto_arima(data,
+                      seasonal=<span class="keyword">False</span>, m=<span class="number">1</span>,
+                      stepwise=<span class="keyword">True</span>)
+
+<span class="comment"># Hacer predicciones</span>
+n_periods = <span class="number">24</span>
+fc, conf_int = model.predict(
+    n_periods=n_periods,
+    return_conf_int=<span class="keyword">True</span>)
+<span class="function">print</span>(<span class="string">f"Modelo: {model.order}"</span>)
+</code></pre>
+                    </div>
+                </div>
+                <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold mb-3">Visualización del Pronóstico</h3>
+                    <div class="mb-4">
+                        <label for="forecastSlider" class="block font-semibold mb-1">Horizonte de pronóstico: <span id="sliderValue" class="text-[#A88B67] font-bold">12</span> períodos</label>
+                        <input type="range" id="forecastSlider" min="6" max="48" value="12" class="w-full">
+                    </div>
+                    <div class="chart-container h-[400px] max-h-[50vh]">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center p-6 mt-8 border-t border-gray-200">
+        <p class="text-sm text-gray-500">Aplicación interactiva diseñada y desarrollada para la exploración de conceptos de Series de Tiempo.</p>
+        <p class="text-xs text-gray-400 mt-1">20 de julio de 2025 - Ciudad de México, México</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const FONT_COLOR = '#3D352E';
+            const GRID_COLOR = '#E0E0E0';
+            const PRIMARY_COLOR = '#A88B67';
+            const SECONDARY_COLOR = '#C9BBA7';
+            const ACCENT_COLOR = '#ff8a65';
+            const WHITE_COLOR = '#FFFFFF';
+            let forecastChart;
+
+            const tooltipTitleCallback = {
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) {
+                            return label.join(' ');
+                        }
+                        return label;
+                    }
+                }
+            };
+            
+            const chartDefaultOptions = (displayLegend = true) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: tooltipTitleCallback,
+                    legend: {
+                        display: displayLegend,
+                        position: 'bottom',
+                        labels: {
+                            color: FONT_COLOR
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: FONT_COLOR },
+                        grid: { color: GRID_COLOR }
+                    },
+                    x: {
+                        ticks: { color: FONT_COLOR, maxRotation: 0, autoSkip: true, autoSkipPadding: 20 },
+                        grid: { display: false }
+                    }
+                },
+            });
+
+            const stationaryData = Array.from({length: 100}, () => 50 + (Math.random() - 0.5) * 20);
+            const nonStationaryData = Array.from({length: 100}, (_, i) => 20 + i * 0.8 + (Math.random() - 0.5) * 15);
+            const stationarityLabels = Array.from({length: 100}, (_, i) => `T${i + 1}`);
+            
+            const stationarityCtx = document.getElementById('stationarityChart').getContext('2d');
+            const stationarityChart = new Chart(stationarityCtx, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: chartDefaultOptions(false)
+            });
+
+            function updateStationarityChart(type) {
+                const descEl = document.getElementById('stationarityDesc');
+                if (type === 'stationary') {
+                    stationarityChart.data.labels = stationarityLabels;
+                    stationarityChart.data.datasets = [{
+                        label: 'Serie Estacionaria',
+                        data: stationaryData,
+                        borderColor: PRIMARY_COLOR,
+                        backgroundColor: 'rgba(168, 139, 103, 0.1)',
+                        fill: true,
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }];
+                    descEl.textContent = 'La media y la varianza son constantes.';
+                    document.getElementById('showStationaryBtn').classList.add('active');
+                    document.getElementById('showNonStationaryBtn').classList.remove('active');
+                } else {
+                    stationarityChart.data.labels = stationarityLabels;
+                    stationarityChart.data.datasets = [{
+                        label: 'Serie No Estacionaria',
+                        data: nonStationaryData,
+                        borderColor: ACCENT_COLOR,
+                        backgroundColor: 'rgba(255, 138, 101, 0.1)',
+                        fill: true,
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }];
+                    descEl.textContent = 'La media muestra una clara tendencia ascendente.';
+                    document.getElementById('showNonStationaryBtn').classList.add('active');
+                    document.getElementById('showStationaryBtn').classList.remove('active');
+                }
+                stationarityChart.update();
+            }
+            
+            document.getElementById('showStationaryBtn').addEventListener('click', () => updateStationarityChart('stationary'));
+            document.getElementById('showNonStationaryBtn').addEventListener('click', () => updateStationarityChart('non-stationary'));
+            updateStationarityChart('stationary');
+
+
+            const acfPacfCtx = document.getElementById('acfPacfChart').getContext('2d');
+            new Chart(acfPacfCtx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 20}, (_, i) => `Lag ${i + 1}`),
+                    datasets: [{
+                        label: 'ACF (decae exponencialmente)',
+                        data: Array.from({length: 20}, (_, i) => 0.8 ** (i+1)),
+                        backgroundColor: PRIMARY_COLOR,
+                        borderRadius: 2
+                    }, {
+                        label: 'PACF (se corta en lag 2)',
+                        data: [0.8, -0.35, ...Array(18).fill(0).map(()=> (Math.random()-0.5)*0.1)],
+                        backgroundColor: SECONDARY_COLOR,
+                        borderRadius: 2
+                    }]
+                },
+                options: chartDefaultOptions()
+            });
+
+            const modelContent = {
+                clasicos: `
+                    <div class="md:col-span-1 flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold mb-3">Modelos Clásicos (ARIMA)</h3>
+                        <p class="text-gray-600 mb-4">El caballo de batalla del análisis de series de tiempo. Los modelos ARIMA (Autoregresivo Integrado de Media Móvil) modelan dependencias lineales. Son excelentes para series con estructuras claras y son altamente interpretables.</p>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li><strong style="color:${PRIMARY_COLOR};">AR (p):</strong> La predicción es una regresión de los valores pasados.</li>
+                            <li><strong style="color:${SECONDARY_COLOR};">I (d):</strong> Número de diferenciaciones para hacer la serie estacionaria.</li>
+                            <li><strong style="color:${ACCENT_COLOR};">MA (q):</strong> La predicción es una regresión de los errores pasados.</li>
+                        </ul>
+                    </div>
+                    <div class="md:col-span-1">
+                        <div class="chart-container h-64 max-h-[30vh]">
+                            <canvas id="arimaDonut"></canvas>
+                        </div>
+                    </div>
+                `,
+                suavizado: `
+                    <div class="md:col-span-1 flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold mb-3">Suavizado Exponencial</h3>
+                        <p class="text-gray-600 mb-4">Una familia de modelos que asignan pesos decrecientes exponencialmente a las observaciones pasadas. Son intuitivos y eficientes para capturar nivel, tendencia y estacionalidad sin necesidad de transformar la serie.</p>
+                        <p class="text-gray-600">El método de Holt-Winters es un ejemplo popular que puede manejar tanto tendencia como estacionalidad.</p>
+                    </div>
+                    <div class="md:col-span-1">
+                        <div class="chart-container">
+                            <canvas id="holtWintersChart"></canvas>
+                        </div>
+                    </div>
+                `,
+                ml: `
+                    <div class="md:col-span-1 flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold mb-3">Machine & Deep Learning</h3>
+                        <p class="text-gray-600 mb-4">Los modelos modernos como Gradient Boosting, LSTMs y Transformers pueden capturar relaciones no lineales complejas y utilizar múltiples series (covariables) de forma nativa.</p>
+                        <p class="text-gray-600">Aunque son más un "caja negra" y requieren más datos, su poder predictivo en problemas complejos es a menudo superior.</p>
+                    </div>
+                    <div class="md:col-span-1">
+                        <div class="chart-container">
+                             <canvas id="modelComparisonRadar"></canvas>
+                        </div>
+                    </div>
+                `
+            };
+
+            function renderModelContent(tab) {
+                document.getElementById('modelContent').innerHTML = modelContent[tab];
+                if (tab === 'clasicos') {
+                    new Chart(document.getElementById('arimaDonut'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['AR (Autoregresivo)', 'I (Integrado)', 'MA (Media Móvil)'],
+                            datasets: [{ data: [40, 20, 40], backgroundColor: [PRIMARY_COLOR, SECONDARY_COLOR, ACCENT_COLOR], borderColor: WHITE_COLOR, borderWidth: 4 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels:{color: FONT_COLOR}}, tooltip: tooltipTitleCallback } }
+                    });
+                } else if (tab === 'suavizado') {
+                     const baseHolt = Array.from({length: 24}, (_, i) => 100 + i*3);
+                    const seasonalHolt = Array.from({length: 24}, (_, i) => Math.sin(i * Math.PI / 3) * 15);
+                    new Chart(document.getElementById('holtWintersChart'), {
+                        type: 'line', data: {
+                            labels: Array.from({length: 24}, (_, i) => `T${i+1}`),
+                            datasets: [{ label: 'Serie Original', data: baseHolt.map((v, i) => v + seasonalHolt[i] + (Math.random()-0.5)*10), borderColor: ACCENT_COLOR, borderWidth: 3, fill: false, pointRadius: 0 },
+                                       { label: 'Tendencia Suavizada', data: baseHolt.map(v=>v+5), borderColor: PRIMARY_COLOR, borderDash: [5, 5], fill: false, pointRadius: 0 }]
+                        }, options: chartDefaultOptions()
+                    });
+                } else if (tab === 'ml') {
+                    new Chart(document.getElementById('modelComparisonRadar'), {
+                        type: 'radar',
+                        data: {
+                            labels: ['Complejidad de Patrones', 'Interpretabilidad', 'Velocidad Cómputo', 'Robustez', 'Necesidad de Datos'],
+                            datasets: [{
+                                label: 'ARIMA', data: [4, 9, 8, 3, 6], backgroundColor: 'rgba(168, 139, 103, 0.2)', borderColor: PRIMARY_COLOR, pointBackgroundColor: PRIMARY_COLOR,
+                            }, {
+                                label: 'LSTM/NN', data: [9, 3, 3, 7, 9], backgroundColor: 'rgba(255, 138, 101, 0.2)', borderColor: ACCENT_COLOR, pointBackgroundColor: ACCENT_COLOR,
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {color: FONT_COLOR}}, tooltip: tooltipTitleCallback}, scales: { r: { angleLines: { color: GRID_COLOR }, grid: { color: GRID_COLOR }, pointLabels: { color: FONT_COLOR }, ticks: { display: false } } } }
+                    });
+                }
+            }
+
+            document.querySelectorAll('.model-tab').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.model-tab').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderModelContent(button.dataset.tab);
+                });
+            });
+            renderModelContent('clasicos');
+            document.querySelector('.model-tab[data-tab="clasicos"]').classList.add('active');
+
+
+            const forecastSlider = document.getElementById('forecastSlider');
+            const sliderValue = document.getElementById('sliderValue');
+            const historyData = [5.6, 5.8, 6.9, 8.9, 10.0, 10.3, 10.8, 12.0, 12.2, 11.8, 11.2, 11.5, 12.5, 13.8, 14.9, 16.0, 15.1, 15.5, 16.8, 17.2, 18.3, 19.0, 18.5, 19.9];
+            
+            function generateForecast(startValue, n_periods) {
+                const forecast = [];
+                const conf_int_lower = [];
+                const conf_int_upper = [];
+                let currentValue = startValue;
+                for(let i = 0; i < n_periods; i++) {
+                    const noise = (Math.random() - 0.5) * 0.5;
+                    currentValue += 0.5 + noise;
+                    forecast.push(currentValue);
+                    const uncertainty = (i + 1) * 0.5;
+                    conf_int_lower.push(currentValue - uncertainty);
+                    conf_int_upper.push(currentValue + uncertainty);
+                }
+                return { forecast, conf_int_lower, conf_int_upper };
+            }
+
+            function updateForecastChart() {
+                const n_periods = parseInt(forecastSlider.value);
+                sliderValue.textContent = n_periods;
+
+                const { forecast, conf_int_lower, conf_int_upper } = generateForecast(historyData[historyData.length - 1], n_periods);
+
+                const historyLabels = Array.from({length: historyData.length}, (_, i) => `T${i+1}`);
+                const forecastLabels = Array.from({length: n_periods}, (_, i) => `F${i+1}`);
+                
+                if (forecastChart) {
+                    forecastChart.destroy();
+                }
+
+                const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+                forecastChart = new Chart(forecastCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [...historyLabels, ...forecastLabels],
+                        datasets: [
+                            { label: 'Datos Históricos', data: historyData, borderColor: PRIMARY_COLOR, fill: false, pointRadius: 1 },
+                            { label: 'Pronóstico', data: [...Array(historyData.length-1).fill(null), historyData.slice(-1)[0], ...forecast], borderColor: ACCENT_COLOR, borderWidth: 2.5, fill: false, pointRadius: 1 },
+                            { label: 'Intervalo de Confianza', data: [...Array(historyData.length).fill(null), ...conf_int_lower], borderColor: 'rgba(255, 138, 101, 0.2)', backgroundColor: 'rgba(255, 138, 101, 0.1)', pointRadius: 0, fill: '+1' },
+                            { label: 'Upper Confidence', data: [...Array(historyData.length).fill(null), ...conf_int_upper], borderColor: 'transparent', pointRadius: 0, fill: false }
+                        ]
+                    },
+                    options: chartDefaultOptions(true)
+                });
+            }
+
+            forecastSlider.addEventListener('input', updateForecastChart);
+            updateForecastChart();
+            
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

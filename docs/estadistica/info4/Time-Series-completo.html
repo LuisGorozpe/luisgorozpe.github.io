@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<!-- Chosen Palette: Neutrals with subtle accents (Custom: bg-gray-50, text-gray-800, text-gray-900, links-blue-600) -->
+<!-- Application Structure Plan: This is a single-page document designed for comprehensive reading. It maintains the hierarchical structure of the original report (sections, subsections, paragraphs, tables, lists, code example). Navigation is primarily through scrolling. All internal citations are linked to a consolidated "Referencias" section at the end, allowing users to easily find the source material. This structure is chosen to facilitate a deep dive into the research content, making it easy to read and reference. -->
+<!-- Visualization & Content Choices: The document primarily presents textual information, tables, and a Python code example. No interactive charts or complex visualizations are used as per the request to export the *content* of the research, which is text-based. All tables are rendered as HTML tables. The Python code is presented in a pre-formatted block with basic syntax highlighting for readability. All explicit URLs from the source document (including those in Tabla 6 and inline) are converted to functional hyperlinks. Numbered citations without explicit URLs in the source are noted as such in the references section. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Exhaustivo de Series de Tiempo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f4f4f4;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+        .code-block .keyword { color: #007bff; font-weight: 600; }
+        .code-block .comment { color: #6c757d; }
+        .code-block .string { color: #28a745; }
+        .code-block .number { color: #fd7e14; }
+        .code-block .function { color: #6f42c1; font-weight: 600; }
+        .code-block .variable { color: #dc3545; }
+        .code-block .builtin { color: #17a2b8; }
+        .code-block .operator { color: #000; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            margin-top: 1rem;
+        }
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f8f8;
+            font-weight: 700;
+        }
+        ul, ol {
+            list-style-position: outside;
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        ul li, ol li {
+            margin-bottom: 0.5rem;
+        }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .citation {
+            font-size: 0.875em;
+            vertical-align: super;
+            margin-left: 0.1em;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl bg-white shadow-lg rounded-lg my-8">
+        <header class="text-center mb-10 pb-6 border-b border-gray-200">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">Un Análisis Exhaustivo de Series de Tiempo</h1>
+            <p class="text-lg text-gray-600">Fundamentos, Metodologías y Aplicaciones en Python</p>
+        </header>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">El análisis de series de tiempo es una disciplina fundamental en la estadística y la ciencia de datos, que permite comprender y pronosticar el comportamiento de variables que evolucionan a lo largo del tiempo. Este informe explora en profundidad los conceptos teóricos básicos, las metodologías clásicas y avanzadas, y las herramientas de software disponibles en Python para el tratamiento de series de tiempo.</h2>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">1. Introducción a las Series de Tiempo</h2>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">1.1. Definición y Conceptos Fundamentales</h3>
+            <p class="mb-4">Una serie de tiempo se define como un conjunto de valores observados o registrados en intervalos de tiempo regulares y secuencialmente ordenados, como datos diarios, semanales, mensuales o anuales.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a>, <a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a> La naturaleza secuencial de estos datos es crucial, ya que los eventos pasados a menudo influyen en los futuros.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a> Los objetivos principales del análisis de series de tiempo incluyen la identificación de patrones no aleatorios, el aislamiento y estudio de sus componentes para anticipar movimientos futuros, y la capacidad de pronosticar valores venideros.</p>
+            <p class="mb-4">Los valores dentro de una serie de tiempo pueden ser continuos (por ejemplo, 12.35, 45.67) o discretos (como 24, 56). De manera similar, los períodos de tiempo pueden medirse de forma continua o discreta.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> Esta distinción en la granularidad de los datos y la frecuencia de muestreo tiene implicaciones directas en la complejidad del modelado. Por ejemplo, los datos continuos pueden requerir una mayor precisión numérica y modelos más sofisticados, mientras que los intervalos de tiempo discretos simplifican la indexación temporal para muchos modelos clásicos. La combinación frecuente de valores continuos en intervalos de tiempo discretos (como los precios diarios de acciones) representa un puente entre el modelado estadístico y las limitaciones computacionales prácticas. La elección del tipo de medición de datos y la frecuencia de muestreo son determinantes para seleccionar los marcos matemáticos y las herramientas computacionales más apropiados. Por ejemplo, los datos financieros de alta frecuencia, con valores continuos y pequeños intervalos de tiempo discretos, a menudo exigen modelos que consideren el ruido de la microestructura y los cambios rápidos en la volatilidad, a diferencia de los datos de ventas mensuales.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a></p>
+            <p class="mb-4">La exploración gráfica de la serie, mediante un gráfico de líneas donde el eje horizontal representa los períodos y el vertical los valores, constituye el punto de partida esencial para cualquier análisis.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> Esta visualización inicial permite detectar patrones como tendencias ascendentes o descendentes, comportamientos oscilatorios o periodicidades.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a></p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">1.2. Componentes de una Serie de Tiempo</h3>
+            <p class="mb-4">El método clásico de análisis de series de tiempo descompone una serie en cuatro influencias o componentes principales que interactúan de forma multiplicativa: Tendencia (T), Fluctuaciones Cíclicas (C), Variaciones Estacionales (E) y Variaciones Irregulares (I).<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a> La relación se expresa comúnmente como Y = T x C x E x I, donde Y representa el valor de la variable en un período dado.</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Tendencia (T):</strong> Refleja el movimiento a largo plazo de la serie, ya sea un aumento, una disminución o una estabilidad a lo largo del tiempo.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a> Puede ajustarse a una línea recta (línea de tendencia) o a otras formas de curvas para representar su comportamiento.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a></li>
+                <li><strong>Fluctuaciones Cíclicas (C):</strong> Son secuencias alternas de puntos por debajo y por encima de la línea de tendencia que se extienden por más de un año.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a> Estas variaciones no son estrictamente periódicas y a menudo están ligadas a ciclos económicos como la prosperidad, recesión, depresión y recuperación, sin depender de factores climáticos o sociales.<a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a>, <a href="#ref-5" class="text-blue-600 hover:underline citation">[5]</a> Este componente es más relevante para datos anuales.</li>
+                <li><strong>Variaciones Estacionales (E):</strong> Se refieren a patrones de cambio que se repiten regularmente año tras año en los mismos meses, trimestres o días, debido a influencias estacionales.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a> Por ejemplo, un fabricante de piscinas inflables experimenta ventas máximas en primavera y verano, mientras que los fabricantes de equipos para la nieve tienen un comportamiento opuesto.<a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a> Se pueden identificar índices estacionales para cada período (por ejemplo, 12 índices para datos mensuales).</li>
+                <li><strong>Variaciones Irregulares (I):</strong> También conocidas como variaciones aleatorias o residuales, son fluctuaciones a corto plazo, imprevisibles y no recurrentes.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a> Pueden ser causadas por eventos especiales fácilmente identificables (elecciones, inundaciones, huelgas, terremotos) o por pura casualidad.<a href="#ref-4" class="text-blue-600 hover:underline citation">[4]</a> Estas fluctuaciones son impredecibles y, en ocasiones, pueden enmascarar los movimientos de tendencia y estacionalidad, dificultando su identificación.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a></li>
+            </ul>
+            <p class="mb-4">La relación multiplicativa (Y = T x C x E x I) entre estos componentes implica que la magnitud de las variaciones estacionales e irregulares puede escalar con la tendencia. Por ejemplo, un aumento estacional del 10% en una tendencia creciente se traducirá en un valor absoluto mayor a medida que la serie avanza. Esto subraya la necesidad de métodos de descomposición cuidadosos (como la descomposición clásica, X-12-ARIMA o la descomposición STL) para separar con precisión estos efectos, especialmente antes de aplicar modelos que asumen aditividad o estacionariedad. El efecto de enmascaramiento de las variaciones irregulares significa que el ruido puede ocultar patrones subyacentes, lo que complica la inspección visual inicial y las pruebas estadísticas. Una descomposición efectiva de las series de tiempo es crucial para comprender los impulsores individuales de la variación. Esta descomposición no es solo descriptiva, sino que también es prescriptiva, ya que orienta la elección de modelos (por ejemplo, ARIMA estacional para una estacionalidad pronunciada, GARCH para la volatilidad irregular). El desafío radica en desenredar con precisión estos componentes, especialmente cuando sus interacciones son complejas o la calidad de los datos es baja.</p>
+            <p class="mb-4">A continuación, se presenta una tabla que resume los componentes de una serie de tiempo:</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">Tabla 1: Componentes de una Serie de Tiempo</h4>
+            <div class="overflow-x-auto mb-6">
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>Descripción</th>
+                            <th>Características Clave</th>
+                            <th>Ejemplo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tendencia (T)</strong></td>
+                            <td>Movimiento general a largo plazo de la serie (ascendente, descendente, estable).</td>
+                            <td>Patrón subyacente que persiste a lo largo del tiempo; puede ser lineal o no lineal.</td>
+                            <td>Crecimiento de la población a lo largo de décadas; disminución de las ventas de un producto obsoleto.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fluctuaciones Cíclicas (C)</strong></td>
+                            <td>Oscilaciones recurrentes no estacionales que duran más de un año.</td>
+                            <td>No son estrictamente periódicas; a menudo relacionadas con ciclos económicos (expansión, recesión).</td>
+                            <td>Ciclos de auge y caída en la economía; fluctuaciones en el mercado inmobiliario a lo largo de varios años.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Variaciones Estacionales (E)</strong></td>
+                            <td>Patrones que se repiten en intervalos fijos y conocidos dentro de un año (diario, semanal, mensual, trimestral).</td>
+                            <td>Causadas por factores estacionales (clima, festividades, costumbres sociales); predecibles.</td>
+                            <td>Aumento de ventas de juguetes en diciembre; mayor consumo de electricidad en verano o invierno.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Variaciones Irregulares (I)</strong></td>
+                            <td>Fluctuaciones a corto plazo, imprevisibles y no recurrentes.</td>
+                            <td>Aleatorias; causadas por eventos inesperados (huelgas, desastres naturales) o ruido.</td>
+                            <td>Un pico de ventas inesperado debido a una promoción no planificada; una caída repentina por una huelga.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">1.3. Propiedades Estadísticas Clave (Media, Varianza, Autocovarianza, Autocorrelación)</h3>
+            <p class="mb-4">Una serie de tiempo se conceptualiza como un proceso estocástico, es decir, una colección de variables aleatorias donde el parámetro 't' representa el tiempo.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a> Para analizar y modelar estas series, es fundamental comprender sus propiedades estadísticas.</p>
+            <p class="mb-4">La <strong>estacionariedad</strong> es una propiedad crucial: una serie de tiempo es estacionaria si sus propiedades estadísticas, como la media, la varianza y la autocorrelación, permanecen constantes a lo largo del tiempo.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a> Una serie estacionaria no presentará patrones predecibles a largo plazo y su gráfico se verá aproximadamente horizontal con una varianza constante, sin picos o caídas significativas.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a> Esta propiedad es una suposición fundamental para la aplicación de muchos modelos clásicos, como los modelos ARIMA.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a> La importancia de la estacionariedad radica en que las definiciones matemáticas de la autocovarianza y la autocorrelación son más sencillas y directas de interpretar para procesos estacionarios, ya que la media y la varianza son constantes. Si una serie no es estacionaria (por ejemplo, tiene una tendencia), la autocovarianza y la autocorrelación no decaerán rápidamente a cero, lo que dificulta distinguir las verdaderas dependencias subyacentes del efecto de la tendencia. Por esta razón, la diferenciación es un paso de preprocesamiento común para transformar una serie no estacionaria en una estacionaria, permitiendo la aplicación efectiva de modelos clásicos.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> La no estacionariedad puede llevar a regresiones espurias, estimaciones de parámetros poco fiables y pronósticos imprecisos.</p>
+            <p class="mb-4">La <strong>autocovarianza ($\gamma_X(h)$)</strong> cuantifica el grado en que diferentes puntos de una serie de tiempo varían conjuntamente.<a href="#ref-9" class="text-blue-600 hover:underline citation">[9]</a>, <a href="#ref-10" class="text-blue-600 hover:underline citation">[10]</a>, <a href="#ref-11" class="text-blue-600 hover:underline citation">[11]</a> Para un proceso estacionario, la autocovarianza a un retardo 'h' se define como la covarianza entre $X_t$ y $X_{t+h}$.<a href="#ref-9" class="text-blue-600 hover:underline citation">[9]</a>, <a href="#ref-10" class="text-blue-600 hover:underline citation">[10]</a> Mide la similitud entre observaciones separadas por diferentes retardos de tiempo.<a href="#ref-10" class="text-blue-600 hover:underline citation">[10]</a> Su fórmula para un proceso estacionario es $\gamma_X(h) = Cov(X(t+h), X(t)) = E[(X(t+h) - \mu)(X(t) - \mu)]$.<a href="#ref-9" class="text-blue-600 hover:underline citation">[9]</a> Las propiedades de la autocovarianza incluyen $\gamma(0) \geq 0$, $|\gamma(h)| \leq \gamma(0)$ y simetría ($\gamma(h) = \gamma(-h)$).<a href="#ref-9" class="text-blue-600 hover:underline citation">[9]</a>, <a href="#ref-11" class="text-blue-600 hover:underline citation">[11]</a>, <a href="#ref-12" class="text-blue-600 hover:underline citation">[12]</a> Una autocovarianza positiva indica que valores altos tienden a ser seguidos por valores altos (y bajos por bajos), mientras que una negativa sugiere una relación inversa. Un valor cercano a cero implica que las observaciones separadas por 'h' períodos de tiempo no están correlacionadas.<a href="#ref-10" class="text-blue-600 hover:underline citation">[10]</a></p>
+            <p class="mb-4">La <strong>autocorrelación ($\rho_X(h)$)</strong> es la correlación de un proceso consigo mismo, pero rezagado en el tiempo.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a>, <a href="#ref-12" class="text-blue-600 hover:underline citation">[12]</a> Es una versión normalizada de la función de autocovarianza, definida como $\rho_X(h) = \gamma_X(h) / \gamma_X(0)$.<a href="#ref-9" class="text-blue-600 hover:underline citation">[9]</a>, <a href="#ref-11" class="text-blue-600 hover:underline citation">[11]</a>, <a href="#ref-12" class="text-blue-600 hover:underline citation">[12]</a> Sus propiedades incluyen $\rho(0) = 1$ y $|\rho(h)| \leq 1$, además de simetría.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a>, <a href="#ref-9" class="text-blue-600 hover:underline citation">[9]</a>, <a href="#ref-12" class="text-blue-600 hover:underline citation">[12]</a></p>
+            <p class="mb-4">Existen dos funciones de autocorrelación principales:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Función de Autocorrelación Simple (FAS o ACF):</strong> Mide la relación lineal entre observaciones separadas por un retardo 'k'.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> Incluye los efectos indirectos de los retardos intermedios. Un coeficiente cercano a +1 indica una fuerte relación directa, -1 una relación inversa fuerte y 0 ninguna relación.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> Para el ruido blanco, la autocorrelación es cercana a cero en todos los retardos, excepto en el retardo 0.<a href="#ref-12" class="text-blue-600 hover:underline citation">[12]</a></li>
+                <li><strong>Función de Autocorrelación Parcial (FAP o PACF):</strong> Mide la autocorrelación para un retardo 'k' después de eliminar el efecto de las autocorrelaciones de los retardos más pequeños que 'k'.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> Proporciona únicamente la relación para la diferencia estricta de 'k' retardos de tiempo.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a></li>
+            </ul>
+            <p class="mb-4">Los coeficientes de autocorrelación (simples o parciales) para diferentes retardos 'k' se grafican en un <strong>correlograma</strong>.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> Esta representación visual de las autocorrelaciones es fundamental para detectar patrones como tendencias y estacionalidad en la serie.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> Los patrones específicos de decaimiento de la ACF y PACF (por ejemplo, decaimiento exponencial para procesos AR, corte abrupto para procesos MA) actúan como "huellas dactilares" para identificar el orden de los componentes AR y MA en los modelos ARIMA.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Esta es una aplicación directa de las propiedades estadísticas teóricas a la selección práctica del modelo. La distinción entre autocorrelación simple y parcial es vital: la simple incluye efectos indirectos, mientras que la parcial aísla los efectos directos, lo que ayuda a diferenciar los procesos AR de los MA.<a href="#ref-2" class="text-blue-600 hover:underline citation">[2]</a> La ACF y la PACF son herramientas analíticas y visuales indispensables en el análisis de series de tiempo, proporcionando información inicial sobre la estructura subyacente de los datos (tendencia, estacionalidad, componentes autorregresivos y de media móvil) y guiando la especificación de los órdenes del modelo. Su función se extiende más allá de los modelos ARIMA clásicos para informar la ingeniería de características en enfoques más modernos de Machine Learning y Deep Learning, como la selección de características de retardo.</p>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">2. Metodología de Box-Jenkins para Modelado ARIMA</h2>
+            <p class="mb-4">La metodología de Box-Jenkins es un enfoque sistemático e iterativo para la identificación, ajuste, verificación y uso de modelos de series de tiempo de media móvil autorregresiva integrada (ARIMA).<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Es particularmente adecuada para series de tiempo de longitud media a larga, idealmente con al menos 50 observaciones.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a></p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">2.1. Fases del Proceso Box-Jenkins (Identificación, Estimación, Verificación Diagnóstica, Pronóstico)</h3>
+            <p class="mb-4">El proceso de Box-Jenkins se compone de cuatro fases interconectadas:</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">2.1.1. Identificación del Modelo</h4>
+            <p class="mb-4">Esta fase inicial tiene como objetivo principal determinar si la serie es estacionaria y si presenta alguna estacionalidad significativa, para luego seleccionar los órdenes apropiados (p, d, q, P, D, Q) para los componentes autorregresivos (AR), de media móvil (MA) y estacionales.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a></p>
+            <p class="mb-4">Primero, se evalúa la <strong>estacionariedad y la estacionalidad</strong> de la serie.<a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Las tendencias pueden evaluarse a partir de secuencias a largo plazo o mediante gráficos de autocorrelación.<a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> La estacionalidad o periodicidad se puede determinar a partir de correlogramas (diagramas de autocorrelación), gráficos de subseries o análisis espectral.<a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a></p>
+            <p class="mb-4">Para lograr la estacionariedad, Box y Jenkins recomiendan la <strong>diferenciación</strong>.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Las tendencias lineales se eliminan con una diferenciación de orden 1 (d=1), mientras que las tendencias cuadráticas requieren una diferenciación de orden 2 (d=2).<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a> La diferenciación estacional (∇sXt = (1 − Bs)Xt) se aplica para remover patrones estacionales.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a></p>
+            <p class="mb-4">Una vez que se ha logrado la estacionariedad y se ha abordado la estacionalidad, el siguiente paso es la <strong>identificación de los órdenes (p, q, P, Q)</strong> utilizando los diagramas de ACF y PACF.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Se comparan los gráficos de ACF y PACF de la muestra con los comportamientos teóricos esperados. Por ejemplo, un proceso AR(p) mostrará una función de autocorrelación parcial que se anula abruptamente en el retardo p, y una función de autocorrelación simple que decae exponencialmente o de forma sinusoidal amortiguada.<a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Por el contrario, un proceso MA(q) exhibirá una función de autocorrelación simple que se anula en el retardo q, y una función de autocorrelación parcial que decae gradualmente.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Criterios de información como el AICc (Criterio de Información de Akaike corregido) también pueden utilizarse para la selección del modelo.<a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a></p>
+            <p class="mb-4">Es importante reconocer que, en la práctica, los diagramas de autocorrelación y autocorrelación parcial de la muestra son variables aleatorias y no siempre coinciden perfectamente con las funciones teóricas, lo que dificulta la identificación del modelo, especialmente para modelos mixtos.<a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Esto a menudo implica un proceso de prueba y error. Aunque las pruebas estadísticas y los gráficos proporcionan orientación, los datos del mundo real rara vez se ajustan perfectamente a los patrones teóricos. Esto exige un grado de juicio experto y experiencia en la interpretación de correlogramas, la selección de los órdenes iniciales del modelo y la decisión sobre las transformaciones. El aspecto de "prueba y error" implica que la selección del modelo no es un proceso puramente algorítmico, sino que implica una iteración de la perspicacia y el refinamiento humanos.</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">2.1.2. Estimación de Parámetros</h4>
+            <p class="mb-4">En esta fase, se utilizan algoritmos computacionales para obtener los coeficientes que mejor se ajustan al modelo ARIMA seleccionado.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> La <strong>Estimación de Máxima Verosimilitud (MLE)</strong> es el método más común y generalmente preferido para la estimación de parámetros.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Otros métodos incluyen mínimos cuadrados no lineales, mínimos cuadrados condicionales o mínimos cuadrados incondicionales.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a> La estimación de parámetros para los modelos de Box-Jenkins es un problema de estimación no lineal complejo, lo que requiere el uso de software estadístico de alta calidad.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a></p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">2.1.3. Verificación Diagnóstica</h4>
+            <p class="mb-4">Esta etapa evalúa si el modelo estimado se ajusta adecuadamente a los datos y si sus residuos se comportan como ruido blanco (es decir, son independientes entre sí y tienen una media y varianza constantes a lo largo del tiempo).<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Para identificar errores de especificación, es útil graficar la media y la varianza de los residuos a lo largo del tiempo, examinar sus funciones ACF y PACF, y realizar pruebas estadísticas como la <strong>prueba de Ljung-Box</strong>.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Si los residuos muestran patrones o correlaciones (es decir, no son ruido blanco), esto indica una especificación inadecuada del modelo, lo que requiere volver a la fase de identificación para encontrar un modelo mejor.<a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> El diagnóstico de los coeficientes, que implica verificar que satisfacen las condiciones de estacionariedad e invertibilidad y que son estadísticamente significativos, también forma parte de esta fase.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a></p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">2.1.4. Pronóstico</h4>
+            <p class="mb-4">La fase final implica la generación de pronósticos futuros para la serie de tiempo utilizando el modelo validado.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-7" class="text-blue-600 hover:underline citation">[7]</a> Se calculan tanto los pronósticos puntuales como los intervalos de predicción, y estos últimos suelen ampliarse para horizontes de pronóstico más largos debido al aumento de la incertidumbre.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-13" class="text-blue-600 hover:underline citation">[13]</a> Si las verificaciones de diagnóstico no son satisfactorias, el proceso se itera volviendo a la etapa de identificación para refinar el modelo.<a href="#ref-13" class="text-blue-600 hover:underline citation">[13]</a> Los pronósticos deben actualizarse continuamente a medida que se disponga de nuevos datos.<a href="#ref-13" class="text-blue-600 hover:underline citation">[13]</a></p>
+            <p class="mb-4">La metodología de Box-Jenkins es un proceso iterativo que implica un ciclo de retroalimentación para el refinamiento del modelo. Este ciclo es un principio fundamental del modelado estadístico robusto, ya que reconoce que las elecciones iniciales del modelo suelen ser aproximaciones y que los datos contienen patrones sutiles que solo pueden hacerse evidentes mediante el análisis de los residuos. El ciclo garantiza que el modelo capture la mayor cantidad posible de información sistemática, dejando solo ruido blanco en los residuos. Este proceso reduce inherentemente el riesgo de sobreajuste o subajuste, que son trampas comunes en la previsión.<a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a></p>
+            <p class="mb-4">A continuación, se presenta una tabla que resume las fases de la metodología de Box-Jenkins:</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">Tabla 2: Fases de la Metodología de Box-Jenkins</h4>
+            <div class="overflow-x-auto mb-6">
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th>Fase</th>
+                            <th>Objetivo Principal</th>
+                            <th>Herramientas/Métodos Clave</th>
+                            <th>Resultado Esperado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Identificación</strong></td>
+                            <td>Determinar estacionariedad, identificar estacionalidad y seleccionar órdenes iniciales (p, d, q, P, D, Q).</td>
+                            <td>Gráficos de la serie, ACF y PACF (correlogramas), diferenciación (estacional y no estacional), criterios de información (AICc).</td>
+                            <td>Serie estacionaria, órdenes del modelo propuestos.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Estimación</strong></td>
+                            <td>Obtener los coeficientes que mejor ajustan el modelo ARIMA seleccionado.</td>
+                            <td>Estimación de Máxima Verosimilitud (MLE), mínimos cuadrados no lineales.</td>
+                            <td>Parámetros del modelo estimados.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Verificación Diagnóstica</strong></td>
+                            <td>Evaluar la adecuación del modelo y si los residuos se comportan como ruido blanco.</td>
+                            <td>Análisis de residuos (gráficos, ACF/PACF de residuos), prueba de Ljung-Box, verificación de significancia de coeficientes.</td>
+                            <td>Residuos sin correlación ni patrones; modelo adecuado o necesidad de re-identificación.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pronóstico</strong></td>
+                            <td>Generar predicciones futuras utilizando el modelo validado.</td>
+                            <td>Aplicación del modelo ajustado para extrapolación.</td>
+                            <td>Pronósticos puntuales e intervalos de predicción para el futuro.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">3. Pruebas Estadísticas para Series de Tiempo</h2>
+            <p class="mb-4">Las pruebas estadísticas son esenciales en el análisis de series de tiempo para validar supuestos clave sobre los datos, como la estacionariedad y la homocedasticidad, que son requisitos previos para la aplicación de muchos modelos.</p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">3.1. Pruebas de Estacionariedad: Test de Dickey-Fuller Aumentado (ADF)</h3>
+            <p class="mb-4">El <strong>Test de Dickey-Fuller Aumentado (ADF)</strong> es una prueba estadística utilizada para determinar la presencia de una raíz unitaria en una muestra de serie de tiempo.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a> Una raíz unitaria es un indicador de no estacionariedad, lo que implica que la serie tiene una tendencia estocástica y su varianza puede cambiar con el tiempo.<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a></p>
+            <p class="mb-4">Las hipótesis para el test ADF son las siguientes:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Hipótesis Nula (H0):</strong> Una raíz unitaria está presente (la serie es no estacionaria).<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a></li>
+                <li><strong>Hipótesis Alternativa (H1):</b> No hay raíz unitaria presente (la serie es estacionaria o estacionaria en tendencia).<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a></li>
+            </ul>
+            <p class="mb-4">El procedimiento del test ADF es una versión extendida del test de Dickey-Fuller que permite procesos autorregresivos de orden superior al incluir términos de diferencia rezagados.<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a> La longitud del retardo ('p') debe determinarse, a menudo utilizando criterios de información como el Criterio de Información de Akaike (AIC) o el Criterio de Información Bayesiano (BIC), o mediante un enfoque de prueba descendente desde órdenes altos.<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a></p>
+            <p class="mb-4">La interpretación del estadístico ADF, que es un número negativo, es directa: cuanto más negativo sea, más fuerte será el rechazo de la hipótesis nula.<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a> Si el estadístico calculado es menor (más negativo) que el valor crítico, se rechaza H0, lo que implica que la serie es estacionaria.<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a> Alternativamente, si el p-valor de la prueba es menor o igual a 0.05, se puede rechazar la hipótesis nula, concluyendo que la serie es estacionaria.<a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a>, <a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a></p>
+            <p class="mb-4">La lógica detrás de esta prueba es que, si una serie se caracteriza por un proceso con raíz unitaria (no estacionario), el nivel rezagado de la serie ($y_{t-1}$) no proporcionará información relevante para predecir el cambio en $y_t$ más allá de la obtenida de los cambios rezagados. Por el contrario, si el proceso no tiene raíz unitaria (es estacionario), exhibirá reversión a la media, lo que significa que el nivel rezagado ($y_{t-1}$) sí proporcionará información relevante para predecir el cambio en la serie, lo que lleva al rechazo de la hipótesis nula.<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a></p>
+            <p class="mb-4">El resultado de la prueba ADF es un paso crítico que determina si una serie de tiempo puede modelarse directamente con modelos lineales tradicionales (como ARMA) o si requiere diferenciación previa para alcanzar la estacionariedad.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Esto convierte al test ADF en un "guardián" fundamental en el flujo de trabajo del análisis de series de tiempo. Un fallo en el rechazo de la hipótesis nula (presencia de una raíz unitaria) implica que la serie tiene una tendencia estocástica y que la diferenciación es necesaria para hacerla estacionaria y aplicar eficazmente los modelos ARIMA.</p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">3.2. Pruebas de Heterocedasticidad: Test ARCH-LM</h3>
+            <p class="mb-4">La <strong>prueba ARCH-LM (Autoregressive Conditional Heteroscedasticity-Lagrange Multiplier)</strong> de Engle (1982) es la prueba estándar para detectar efectos ARCH.<a href="#ref-1" class="text-blue-600 hover:underline citation">[1]</a>, <a href="#ref-17" class="text-blue-600 hover:underline citation">[17]</a>, <a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a> Los efectos ARCH indican heterocedasticidad condicional, lo que significa que la varianza de los errores de la serie no es constante a lo largo del tiempo, sino que depende de los cuadrados de las innovaciones pasadas (autocorrelación en la serie al cuadrado).<a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a></p>
+            <p class="mb-4">Las hipótesis para la prueba ARCH-LM son:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Hipótesis Nula (H0):</strong> No hay efecto ARCH (no hay autocorrelación en los residuos al cuadrado; la varianza es constante).<a href="#ref-17" class="text-blue-600 hover:underline citation">[17]</a>, <a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a></li>
+                <li><strong>Hipótesis Alternativa (Ha):</strong> Hay efectos ARCH presentes (hay autocorrelación en los residuos al cuadrado; la varianza es variable en el tiempo).<a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a></li>
+            </ul>
+            <p class="mb-4">La prueba es un test de multiplicadores de Lagrange.<a href="#ref-17" class="text-blue-600 hover:underline citation">[17]</a>, <a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a> Implica primero estimar un modelo para la media condicional de la serie (por ejemplo, un modelo ARIMA) y obtener sus residuos. Luego, se realiza una regresión de los residuos al cuadrado sobre sus propios valores pasados.<a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a> El estadístico de prueba (un estadístico F) sigue una distribución chi-cuadrado ($\chi^2$) bajo la hipótesis nula.<a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a></p>
+            <p class="mb-4">La interpretación es que un valor crítico grande del estadístico (o un p-valor menor a 0.05) indica el rechazo de H0, lo que lleva a la conclusión de que existen efectos ARCH significativos.<a href="#ref-18" class="text-blue-600 hover:underline citation">[18]</a> La detección de heterocedasticidad con ARCH-LM es un paso vital, especialmente en series de tiempo financieras donde es común la agrupación de la volatilidad (períodos de alta volatilidad seguidos de alta volatilidad).<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a> Ignorar esto puede conducir a estimaciones de parámetros ineficientes y a intervalos de confianza incorrectos para los pronósticos. La prueba actúa como un diagnóstico para confirmar la necesidad de modelos de volatilidad más sofisticados, como los modelos GARCH, que modelan explícitamente la varianza condicional.</p>
+            <p class="mb-4">A continuación, se presenta una tabla que resume las pruebas de estacionariedad y heterocedasticidad:</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">Tabla 3: Resumen de Pruebas de Estacionariedad y Heterocedasticidad</h4>
+            <div class="overflow-x-auto mb-6">
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th>Prueba</th>
+                            <th>Objetivo</th>
+                            <th>Hipótesis Nula (H0)</th>
+                            <th>Hipótesis Alternativa (H1)</th>
+                            <th>Criterio de Decisión (p-value / valor crítico)</th>
+                            <th>Implicación de Rechazar H0</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Dickey-Fuller Aumentado (ADF)</strong></td>
+                            <td>Determinar la presencia de una raíz unitaria (no estacionariedad).</td>
+                            <td>La serie tiene una raíz unitaria (no estacionaria).</td>
+                            <td>La serie no tiene raíz unitaria (estacionaria).</td>
+                            <td>p-value $\leq 0.05$ o Estadístico ADF < Valor Crítico (más negativo).</td>
+                            <td>La serie es estacionaria.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ARCH-LM (Engle's)</strong></td>
+                            <td>Detectar efectos de heterocedasticidad condicional autorregresiva (varianza no constante).</td>
+                            <td>No hay efectos ARCH (la varianza es constante).</td>
+                            <td>Hay efectos ARCH (la varianza es variable en el tiempo).</td>
+                            <td>p-value $\leq 0.05$ o Estadístico F > Valor Crítico (grande).</td>
+                            <td>La serie presenta heterocedasticidad condicional.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">4. Modelos Clásicos de Series de Tiempo</h2>
+            <p class="mb-4">Esta sección detalla los modelos fundamentales para el pronóstico de series de tiempo, abarcando la familia ARIMA, los métodos de suavización exponencial y los modelos específicos para la volatilidad.</p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">4.1. Modelos ARIMA (AutoRegressive Integrated Moving Average)</h3>
+            <p class="mb-4">Los modelos ARIMA, acrónimo de AutoRegressive Integrated Moving Average, son una técnica ampliamente utilizada para el análisis y la predicción de series de tiempo. Combinan un componente autorregresivo (AR), un componente de media móvil (MA) y un componente "Integrado" (I) que implica la diferenciación de la serie para lograr la estacionariedad.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Estos modelos permiten un análisis sofisticado y una predicción de datos de series de tiempo, teniendo en cuenta patrones, tendencias y estacionalidad.<a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a></p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">4.1.1. Parámetros (p, d, q) y su Determinación</h4>
+            <p class="mb-4">Los tres parámetros clave de un modelo ARIMA(p, d, q) son:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>p (orden AR):</strong> Representa el número de observaciones rezagadas (valores pasados) de la propia serie que se incluyen en el modelo.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Determina cuánto se remonta el modelo en el tiempo para predecir la observación actual.<a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Este parámetro se identifica observando el punto de corte en el gráfico de la Función de Autocorrelación Parcial (PACF).<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a></li>
+                <li><strong>d (grado de diferenciación):</strong> Indica el número de veces que se diferencian las observaciones originales para hacer que la serie sea estacionaria.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Se determina aplicando diferenciación hasta que los datos se asemejen a ruido blanco, a menudo utilizando pruebas estadísticas como el test ADF.<a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a></li>
+                <li><strong>q (orden MA):</strong> Representa el número de errores de pronóstico rezagados que se incluyen en el modelo.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Captura la relación entre una observación y los errores residuales de un modelo de media móvil aplicado a observaciones rezagadas.<a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Este parámetro se identifica observando el punto de corte en el gráfico de la Función de Autocorrelación (ACF).<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a></li>
+            </ul>
+            <p class="mb-4">Existen heurísticas para el uso de términos AR y MA: los términos AR son adecuados cuando los gráficos ACF muestran que la autocorrelación decae hacia cero y el gráfico PACF se corta rápidamente; los términos MA son apropiados cuando hay autocorrelación negativa en el retardo 1, la ACF cae bruscamente después de pocos retardos y la PACF disminuye gradualmente.<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a></p>
+            <p class="mb-4">La fortaleza de la familia ARIMA radica en su parsimonia, es decir, su capacidad para capturar dependencias temporales complejas con relativamente pocos parámetros (p, d, q, P, D, Q). Esto los hace interpretables y menos propensos al sobreajuste en conjuntos de datos más pequeños en comparación con modelos de aprendizaje profundo muy complejos. Las extensiones (SARIMA, ARIMAX) demuestran la adaptabilidad del marco ARIMA central para manejar fenómenos más matizados del mundo real, tendiendo un puente entre las series de tiempo puramente univariadas y aquellas influenciadas por factores externos.</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">4.1.2. Variaciones: SARIMA (Seasonal ARIMA)</h4>
+            <p class="mb-4">El modelo SARIMA (Seasonal AutoRegressive Integrated Moving Average) es una extensión del modelo ARIMA que permite modelar series de tiempo con un componente estacional.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a>, <a href="#ref-8" class="text-blue-600 hover:underline citation">[8]</a> Incorpora tres nuevos hiperparámetros estacionales: P (orden AR estacional), D (grado de diferenciación estacional) y Q (orden MA estacional), además de un parámetro para el período estacional (s).<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a>, <a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a> Un modelo SARIMA se expresa típicamente como SARIMA((p, d, q), (P, D, Q)s).<a href="#ref-6" class="text-blue-600 hover:underline citation">[6]</a> Los modelos SARIMA se basan en la aplicación de modelos ARMA a una serie de tiempo transformada, donde se ha eliminado el comportamiento estacional y no estacionario.<a href="#ref-3" class="text-blue-600 hover:underline citation">[3]</a></p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">4.1.3. Variaciones: ARIMAX (ARIMA con Variables Exógenas)</h4>
+            <p class="mb-4">El modelo ARIMAX (AutoRegressive Integrated Moving Average with Exogenous variables) extiende el marco ARIMA tradicional al integrar variables exógenas, es decir, factores externos que pueden influir en la variable principal de interés.<a href="#ref-20" class="text-blue-600 hover:underline citation">[20]</a>, <a href="#ref-21" class="text-blue-600 hover:underline citation">[21]</a> Esta integración permite una mayor precisión predictiva al incorporar información de factores externos (por ejemplo, indicadores macroeconómicos, temperatura, humedad).<a href="#ref-20" class="text-blue-600 hover:underline citation">[20]</a> La formulación del modelo ARIMAX incluye términos para las variables exógenas ($X_{t,k}$) y sus coeficientes ($\beta_k$).<a href="#ref-20" class="text-blue-600 hover:underline citation">[20]</a>, <a href="#ref-21" class="text-blue-600 hover:underline citation">[21]</a> Requiere una cuidadosa preparación de los datos y la selección de variables exógenas relevantes que realmente influyan en la serie de tiempo.<a href="#ref-20" class="text-blue-600 hover:underline citation">[20]</a>, <a href="#ref-21" class="text-blue-600 hover:underline citation">[21]</a> En Python, la clase `SARIMAX` del módulo `statsmodels.tsa.statespace` se utiliza comúnmente para implementar modelos ARIMAX.<a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a>, <a href="#ref-21" class="text-blue-600 hover:underline citation">[21]</a></p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">4.2. Modelos de Suavización Exponencial (Holt-Winters)</h3>
+            <p class="mb-4">El modelo de suavización exponencial de Holt-Winters es un procedimiento de pronóstico utilizado para predicciones a corto y medio plazo, especialmente para datos de series de tiempo que exhiben tanto una tendencia como un comportamiento estacional.<a href="#ref-22" class="text-blue-600 hover:underline citation">[22]</a> A diferencia de los métodos de suavización exponencial más simples, Holt-Winters está diseñado específicamente para manejar explícitamente la tendencia y la estacionalidad.<a href="#ref-22" class="text-blue-600 hover:underline citation">[22]</a> Se basa en el cálculo de cuatro componentes (aunque no se nombran explícitamente en los resúmenes, estos suelen incluir el nivel, la tendencia y los componentes estacionales, junto con un parámetro de suavización para cada uno).<a href="#ref-22" class="text-blue-600 hover:underline citation">[22]</a></p>
+            <p class="mb-4">Las aplicaciones de Holt-Winters son diversas, destacando su uso en la previsión del consumo de energía (por ejemplo, energía eléctrica residencial, consumo de energía en centros de datos) para la planificación y el equilibrio entre la oferta y la demanda.<a href="#ref-22" class="text-blue-600 hover:underline citation">[22]</a> El rendimiento del modelo se evalúa a menudo utilizando métricas como el Error Porcentual Absoluto Medio (MAPE).<a href="#ref-22" class="text-blue-600 hover:underline citation">[22]</a> En Python, este modelo está disponible en bibliotecas como `statsmodels`<a href="#ref-23" class="text-blue-600 hover:underline citation">[23]</a> y `Darts`<a href="#ref-24" class="text-blue-600 hover:underline citation">[24]</a>.</p>
+            <p class="mb-4">Los métodos de suavización exponencial, incluido Holt-Winters, son relativamente sencillos y altamente interpretables en comparación con los modelos ARIMA complejos o los modelos de aprendizaje profundo. Su fuerza reside en su capacidad para modelar y suavizar directamente patrones específicos (nivel, tendencia, estacionalidad) utilizando promedios ponderados que dan más importancia a las observaciones recientes.<a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a> Esto los hace particularmente efectivos para series con tendencias y patrones estacionales claros y estables, donde la dinámica subyacente no es excesivamente compleja ni está sujeta a cambios estructurales repentinos.</p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">4.3. Modelos GARCH (Generalized Autoregressive Conditional Heteroscedasticity) para Volatilidad</h3>
+            <p class="mb-4">Los modelos GARCH (Generalized Autoregressive Conditionally Heteroscedastic) se utilizan para estimar la volatilidad (varianza condicional) de las series de tiempo, especialmente en el ámbito financiero.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a>, <a href="#ref-26" class="text-blue-600 hover:underline citation">[26]</a> Su propósito principal es abordar el fenómeno de "agrupación de volatilidad", donde los períodos de alta volatilidad tienden a ser seguidos por períodos de alta volatilidad, y viceversa.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a></p>
+            <p class="mb-4">Los modelos GARCH fueron propuestos por Bollerslev (1986) como una extensión de los modelos ARCH (Autoregressive Conditionally Heteroscedastic) de Engle (1982).<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a> En los modelos ARCH, la varianza condicional es una función lineal de los cuadrados de las innovaciones rezagadas.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a></p>
+            <p class="mb-4">El <strong>modelo GARCH(1,1)</strong> es la especificación más común y estima la varianza condicional basándose en los errores cuadrados rezagados de un período y la varianza condicional del período anterior (término autorregresivo).<a href="#ref-26" class="text-blue-600 hover:underline citation">[26]</a> Su fórmula es:
+            $\hat{\sigma}_t^2 = \alpha_0 + \alpha_1 \epsilon_{t-1}^2 + \beta_1 \sigma_{t-1}^2$.<a href="#ref-26" class="text-blue-600 hover:underline citation">[26]</a>
+            Para que el modelo sea estacionario y converja a un nivel de equilibrio, los parámetros deben satisfacer $\alpha + \beta \leq 1$.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a>, <a href="#ref-26" class="text-blue-600 hover:underline citation">[26]</a> La volatilidad incondicional se puede derivar como $\hat{\sigma}^2 = \frac{\alpha_0}{1 - \alpha_1 - \beta_1}$.<a href="#ref-26" class="text-blue-600 hover:underline citation">[26]</a></p>
+            <p class="mb-4">Los modelos ARMA-GARCH, que combinan modelos ARMA para la media de la serie con modelos GARCH para la varianza, presentan algunas debilidades según Tsay (2013). Suponen que los choques positivos y negativos tienen el mismo efecto sobre la volatilidad, lo que les impide capturar efectos asimétricos.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a> Tienden a sobrestimar la volatilidad debido a una respuesta lenta a choques grandes y aislados, y las estimaciones a menudo muestran alta persistencia y leptocurtosis condicional.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a></p>
+            <p class="mb-4">Para abordar estas debilidades, especialmente los efectos asimétricos (efecto de apalancamiento), se han propuesto varias extensiones <a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a>:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>EGARCH (Exponential GARCH):</strong> Modela el logaritmo de la varianza condicional, permitiendo impactos asimétricos.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a></li>
+                <li><strong>TGARCH (Threshold GARCH) / GJR-GARCH:</strong> Permite que los choques negativos tengan un mayor impacto en la volatilidad que los positivos de la misma magnitud.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a></li>
+                <li><strong>APARCH (Asymmetric Power ARCH):</strong> Un modelo más general que permite tanto efectos asimétricos como una transformación de potencia flexible de la desviación estándar condicional.<a href="#ref-19" class="text-blue-600 hover:underline citation">[19]</a></li>
+            </ul>
+            <p class="mb-4">La estimación de los modelos GARCH requiere métodos de optimización como la máxima verosimilitud, debido a la no observabilidad de los rendimientos esperados y la naturaleza no lineal de las ecuaciones.<a href="#ref-26" class="text-blue-600 hover:underline citation">[26]</a> Se recomienda el uso de software especializado como Eviews, RATS o STATA.<a href="#ref-26" class="text-blue-600 hover:underline citation">[26]</a></p>
+            <p class="mb-4">Los modelos GARCH demuestran que la magnitud de las irregularidades (es decir, la volatilidad) puede exhibir patrones predecibles a lo largo del tiempo. Aunque los choques individuales son aleatorios, la tendencia a que los choques grandes sigan a otros choques grandes es un fenómeno predecible. Esta distinción es crucial: transforma el "ruido" en un componente estructurado y modelable, especialmente en la gestión de riesgos financieros. Los modelos GARCH representan un avance significativo, particularmente para las series de tiempo financieras, al permitir el modelado y la previsión del riesgo. Destacan que incluso los componentes aparentemente aleatorios de una serie pueden tener estructuras subyacentes que, cuando se identifican correctamente, proporcionan un poder predictivo valioso para aspectos específicos (como la exposición al riesgo) en lugar de solo pronósticos puntuales de la serie en sí.</p>
+            <p class="mb-4">A continuación, se presenta una tabla comparativa de los modelos clásicos de series de tiempo:</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">Tabla 4: Comparación de Modelos Clásicos de Series de Tiempo</h4>
+            <div class="overflow-x-auto mb-6">
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th>Modelo</th>
+                            <th>Propósito Principal</th>
+                            <th>Fortalezas</th>
+                            <th>Limitaciones/Consideraciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ARIMA</strong></td>
+                            <td>Modelar series de tiempo univariadas con dependencias lineales, tendencia y estacionalidad tras diferenciación.</td>
+                            <td>Captura estructuras de autocorrelación complejas; interpretable; buen rendimiento para patrones lineales.</td>
+                            <td>Requiere estacionariedad (mediante diferenciación); identificación de órdenes (p,d,q) puede ser compleja.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SARIMA</strong></td>
+                            <td>Extensión de ARIMA para series con fuerte estacionalidad.</td>
+                            <td>Modela eficazmente patrones estacionales complejos; combina componentes no estacionales y estacionales.</td>
+                            <td>Mayor número de parámetros (P,D,Q,s) a identificar; puede ser sensible a la correcta especificación estacional.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ARIMAX</strong></td>
+                            <td>Extensión de ARIMA para incorporar variables exógenas.</td>
+                            <td>Mejora la precisión predictiva al incluir factores externos; permite un análisis más completo de las influencias.</td>
+                            <td>Requiere la disponibilidad y selección cuidadosa de variables exógenas relevantes; la relación con las exógenas debe ser lineal.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Suavización Exponencial (Holt-Winters)</strong></td>
+                            <td>Pronóstico a corto y medio plazo para series con tendencia y estacionalidad.</td>
+                            <td>Simple y fácil de implementar; altamente interpretable; robusto para series con patrones claros y estables.</td>
+                            <td>Asume patrones de tendencia y estacionalidad relativamente estables; menos flexible para estructuras de autocorrelación complejas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GARCH</strong></td>
+                            <td>Modelar y pronosticar la volatilidad (varianza condicional) de series de tiempo, especialmente financieras.</td>
+                            <td>Captura la "agrupación de volatilidad"; esencial para la gestión de riesgos; existen extensiones para efectos asimétricos.</td>
+                            <td>Asume que los choques positivos/negativos tienen el mismo efecto (en el modelo básico); estimación compleja; requiere software especializado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">5. Modelos Avanzados de Series de Tiempo con Machine Learning y Deep Learning</h2>
+            <p class="mb-4">Con el avance de la capacidad computacional y el desarrollo de algoritmos, los modelos de Machine Learning (ML) y Deep Learning (DL) han ganado terreno en el pronóstico de series de tiempo, ofreciendo mayor flexibilidad para patrones no lineales y grandes volúmenes de datos.</p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">5.1. Modelos Basados en Redes Neuronales Recurrentes (RNN, LSTM, GRU)</h3>
+            <p class="mb-4">Las Redes Neuronales Recurrentes (RNN) son un tipo de red neuronal profunda diseñada específicamente para procesar datos secuenciales. A diferencia de las redes neuronales tradicionales que asumen entradas y salidas independientes, las RNN utilizan conexiones cíclicas que permiten que la información persista dentro de la red, manteniendo una "memoria" de las entradas anteriores para influir en las salidas actuales.<a href="#ref-27" class="text-blue-600 hover:underline citation">[27]</a>, <a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> Procesan las secuencias entrada por entrada, actualizando su estado interno en cada paso temporal para mantener el contexto de lo que ha ocurrido previamente.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a></p>
+            <p class="mb-4">Las <strong>ventajas</strong> de las RNN para el pronóstico de series de tiempo incluyen su capacidad para manejar secuencias de longitud variable, lo que las hace flexibles para diferentes tipos de datos.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a> Además, al mantener un estado interno, las RNN capturan dependencias a largo plazo, esenciales para comprender tendencias y patrones.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a> Son modelos generales que pueden adaptarse a múltiples tareas sin necesidad de ingeniería de características específica.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a> Sin embargo, sus <strong>desventajas</strong> principales son el problema de la desaparición y explosión de gradientes durante el entrenamiento, lo que dificulta el aprendizaje de dependencias a largo plazo y hace que el entrenamiento sea computacionalmente intensivo.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> También presentan una paralelización limitada debido a su procesamiento secuencial.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> Las RNN se aplican en la previsión de ventas, la predicción de precios de acciones y el análisis de tendencias económicas.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a></p>
+            <p class="mb-4">Para superar las limitaciones de las RNN tradicionales, se desarrollaron las redes <strong>Long Short-Term Memory (LSTM)</strong> y <strong>Gated Recurrent Units (GRU)</strong>.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a>, <a href="#ref-30" class="text-blue-600 hover:underline citation">[30]</a> La evolución de las RNN a las LSTM y luego a las GRU demuestra una clara progresión impulsada por la necesidad de superar el problema de la desaparición de gradientes y capturar mejor las dependencias a largo plazo. El problema central de las RNN era su incapacidad para "recordar" información a lo largo de secuencias extensas debido a la desaparición de gradientes. Las LSTM resolvieron esto introduciendo mecanismos de compuerta explícitos (compuertas de entrada, olvido y salida) que actúan como controladores de memoria sofisticados.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-30" class="text-blue-600 hover:underline citation">[30]</a> Las GRU optimizaron esto simplificando la estructura de las compuertas, manteniendo gran parte del rendimiento y demostrando una compensación entre complejidad y eficiencia.</p>
+            <p class="mb-4">Las <strong>LSTM</strong> incorporan "compuertas" (de entrada, olvido y salida) que controlan el flujo de información hacia y desde un estado de celda, permitiendo la retención selectiva de la memoria.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a>, <a href="#ref-30" class="text-blue-600 hover:underline citation">[30]</a> Esto las hace más efectivas para aprender y recordar información en secuencias largas, lo cual es crucial para patrones complejos de series de tiempo.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> Sus <strong>ventajas</strong> incluyen una captura mejorada de dependencias a largo plazo y un flujo de gradientes más estable durante el entrenamiento.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> Sin embargo, son más complejas que las RNN simples, lo que se traduce en más parámetros, un mayor costo computacional y tiempos de entrenamiento potencialmente más largos.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> Aún así, pueden enfrentar desafíos con dependencias <em>muy</em> a largo plazo.<a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> Se aplican ampliamente en la predicción de precios de acciones y otras series de tiempo donde la memoria a largo plazo es esencial.<a href="#ref-30" class="text-blue-600 hover:underline citation">[30]</a></p>
+            <p class="mb-4">Las <strong>GRU</strong> son una simplificación de las LSTM, que combinan algunas de las compuertas (de actualización y reinicio) para reducir la complejidad computacional.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a>, <a href="#ref-30" class="text-blue-600 hover:underline citation">[30]</a> Ofrecen un rendimiento similar al de las LSTM, pero con menos parámetros y un entrenamiento más rápido.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a>, <a href="#ref-30" class="text-blue-600 hover:underline citation">[30]</a> Proporcionan un buen equilibrio entre rendimiento y eficiencia.<a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> A pesar de sus ventajas, las GRU siguen procesando datos secuencialmente, lo que limita la paralelización en comparación con modelos como los Transformers.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> En algunos escenarios de series de tiempo altamente complejos, la estructura de compuerta simplificada de las GRU podría ser menos expresiva que la arquitectura más elaborada de las LSTM.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a> Son efectivas en aplicaciones que involucran datos secuenciales, como la traducción automática y el reconocimiento de voz.<a href="#ref-30" class="text-blue-600 hover:underline citation">[30]</a></p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">5.2. Modelos Basados en Transformers</h3>
+            <p class="mb-4">Los <strong>Transformers</strong>, introducidos por Google en 2017, son una alternativa emergente que ha superado a las RNN en muchas tareas de procesamiento de lenguaje natural (NLP) y están ganando terreno en el pronóstico de series de tiempo.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> A diferencia de las redes recurrentes, los Transformers procesan secuencias utilizando un mecanismo de autoatención que analiza la secuencia completa a la vez, en lugar de secuencialmente.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a> Esto les permite capturar dependencias a largo plazo sin recurrir a estructuras recurrentes.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a></p>
+            <p class="mb-4">Las principales <strong>ventajas</strong> de los Transformers para el pronóstico de series de tiempo son:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Procesamiento Paralelo:</strong> Pueden procesar secuencias en paralelo, lo que reduce significativamente el tiempo de entrenamiento, especialmente para series de tiempo muy largas.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a></li>
+                <li><strong>Excelente Captura de Dependencias a Largo Plazo:</strong> Son altamente efectivos para capturar dependencias de largo alcance sin los problemas de desaparición/explosión de gradientes inherentes a las RNN.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a></li>
+                <li><strong>Escalabilidad:</strong> Su naturaleza paralela los hace más escalables para conjuntos de datos más grandes y secuencias más largas.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a>, <a href="#ref-29" class="text-blue-600 hover:underline citation">[29]</a></li>
+            </ul>
+            <p class="mb-4">Sin embargo, también presentan <strong>desventajas</strong>:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Alto Costo Computacional (para secuencias muy largas):</strong> Aunque son paralelos, el mecanismo de autoatención puede ser computacionalmente intensivo para secuencias extremadamente largas, ya que escala cuadráticamente con la longitud de la secuencia.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a></li>
+                <li><strong>Requisitos de Datos:</strong> A menudo requieren grandes cantidades de datos para un entrenamiento efectivo debido a su elevado número de parámetros.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a></li>
+                <li><strong>Interpretabilidad:</strong> Al igual que otros modelos complejos de aprendizaje profundo, comprender el razonamiento exacto detrás de la predicción de un Transformer puede ser un desafío.<a href="#ref-28" class="text-blue-600 hover:underline citation">[28]</a></li>
+            </ul>
+            <p class="mb-4">El cambio del procesamiento secuencial (recurrencia) al procesamiento paralelo con atención marca un cambio de paradigma fundamental. Para las series de tiempo, significa que el modelo puede ponderar la importancia de <em>todas</em> las observaciones pasadas simultáneamente al realizar una predicción, en lugar de depender de un estado oculto comprimido que podría perder información en secuencias largas. Esta capacidad de "contexto global" es una ventaja significativa para series de tiempo muy largas donde las RNN tradicionales tienen dificultades incluso con compuertas. La escalabilidad cuadrática de la atención es una limitación práctica para secuencias extremadamente largas, lo que lleva a la investigación continua en mecanismos de atención más eficientes. Los Transformers están expandiendo los límites de lo que es posible en el pronóstico de series de tiempo, especialmente para secuencias complejas, de alta dimensionalidad y muy largas. Ofrecen una alternativa poderosa a las redes recurrentes tradicionales, particularmente en escenarios donde la eficiencia computacional y la capacidad de capturar dependencias muy distantes son primordiales.</p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">5.3. Modelos de Machine Learning (Prophet, XGBoost, LightGBM)</h3>
+            <p class="mb-4">Además de las redes neuronales profundas, varios modelos de Machine Learning han demostrado ser muy eficaces en el pronóstico de series de tiempo, a menudo ofreciendo un equilibrio entre precisión y facilidad de uso.</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">5.3.1. Prophet</h4>
+            <p class="mb-4"><strong>Prophet</strong>, desarrollado por el equipo de Core Data Science de Facebook (ahora Meta), es una herramienta de código abierto diseñada para producir pronósticos de alta calidad para series de tiempo univariadas que presentan estacionalidad múltiple (anual, semanal, diaria), crecimiento lineal o no lineal y efectos de festividades.<a href="#ref-31" class="text-blue-600 hover:underline citation">[31]</a>, <a href="#ref-32" class="text-blue-600 hover:underline citation">[32]</a>, <a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a>, <a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a> Se basa en un modelo aditivo que ajusta tendencias no lineales con estos componentes.<a href="#ref-31" class="text-blue-600 hover:underline citation">[31]</a>, <a href="#ref-32" class="text-blue-600 hover:underline citation">[32]</a>, <a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a> Prophet detecta automáticamente los puntos de cambio (changepoints) y los patrones estacionales.<a href="#ref-36" class="text-blue-600 hover:underline citation">[36]</a></p>
+            <p class="mb-4">Sus principales <strong>ventajas</strong> son su velocidad, su capacidad de automatización completa, su robustez ante datos faltantes, cambios en la tendencia y valores atípicos.<a href="#ref-32" class="text-blue-600 hover:underline citation">[32]</a>, <a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a>, <a href="#ref-37" class="text-blue-600 hover:underline citation">[37]</a> Permite ajustar los pronósticos con parámetros interpretables por humanos, lo que lo hace accesible para usuarios sin una profunda experiencia estadística.<a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a>, <a href="#ref-36" class="text-blue-600 hover:underline citation">[36]</a> Es más adecuado para series de tiempo con fuertes efectos estacionales y varias temporadas de datos históricos.<a href="#ref-32" class="text-blue-600 hover:underline citation">[32]</a>, <a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a> En Python, Prophet sigue la API de `sklearn` y se instala fácilmente a través de `pip` o `conda`.<a href="#ref-32" class="text-blue-600 hover:underline citation">[32]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a></p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">5.3.2. XGBoost y LightGBM</h4>
+            <p class="mb-4"><strong>XGBoost</strong> y <strong>LightGBM</strong> son algoritmos de <em>gradient boosting</em> ampliamente utilizados en tareas de regresión y clasificación, y son altamente adaptables para el pronóstico de series de tiempo.<a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a>, <a href="#ref-38" class="text-blue-600 hover:underline citation">[38]</a>, <a href="#ref-39" class="text-blue-600 hover:underline citation">[39]</a> Estos modelos construyen un modelo predictivo como un <em>ensemble</em> de otros modelos más débiles, típicamente árboles de decisión.<a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a> La técnica de <em>boosting</em> funciona añadiendo nuevos modelos para corregir los errores de los modelos anteriores.<a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a>, <a href="#ref-38" class="text-blue-600 hover:underline citation">[38]</a></p>
+            <p class="mb-4"><strong>XGBoost</strong> es un modelo de <em>gradient boosting</em> muy eficiente, flexible y portable que utiliza técnicas de construcción de árboles.<a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a> Los árboles en XGBoost crecen en profundidad (<em>depth-wise</em>) <a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a>, lo que contribuye a su robustez.<a href="#ref-38" class="text-blue-600 hover:underline citation">[38]</a>
+            <strong>LightGBM</strong>, desarrollado por Microsoft, es una técnica de código abierto similar a XGBoost, pero sus árboles crecen por hojas (<em>leaf-wise</em>).<a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a> Es más ligero, requiere menos recursos, es más rápido y eficiente que XGBoost.<a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a></p>
+            <p class="mb-4">Ambos algoritmos ofrecen <strong>ventajas</strong> significativas para series de tiempo: pueden incluir fácilmente variables exógenas, capturar relaciones no lineales y escalar a grandes conjuntos de datos.<a href="#ref-39" class="text-blue-600 hover:underline citation">[39]</a> La biblioteca `skforecast` en Python simplifica su aplicación para el pronóstico de series de tiempo, manejando la transformación de datos, la predicción iterativa y la validación.<a href="#ref-39" class="text-blue-600 hover:underline citation">[39]</a> Aunque LightGBM es generalmente más rápido y consume menos memoria, XGBoost puede construir modelos más robustos y cuenta con una comunidad y literatura más amplias.<a href="#ref-38" class="text-blue-600 hover:underline citation">[38]</a></p>
+            <p class="mb-4">Estos modelos de Machine Learning representan un cambio hacia enfoques más flexibles y basados en datos que pueden manejar patrones complejos y grandes conjuntos de datos sin requerir suposiciones estrictas como la linealidad o la estacionariedad (después de la ingeniería de características). A menudo, proporcionan una precisión predictiva superior en muchos escenarios del mundo real, especialmente cuando se combinan con una ingeniería de características cuidadosa (por ejemplo, la creación de características de retardo, características cíclicas, indicadores de vacaciones) que incorpora conocimientos específicos de series de tiempo.</p>
+            <p class="mb-4">A continuación, se presenta una tabla comparativa de los modelos de ML/DL para series de tiempo:</p>
+
+            <h4 class="text-xl font-semibold text-gray-700 mb-4">Tabla 5: Comparación de Modelos de ML/DL para Series de Tiempo</h4>
+            <div class="overflow-x-auto mb-6">
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th>Modelo</th>
+                            <th>Tipo de Modelo</th>
+                            <th>Mecanismo Clave</th>
+                            <th>Fortalezas para Series de Tiempo</th>
+                            <th>Limitaciones/Consideraciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>RNN</strong></td>
+                            <td>Red Neuronal Recurrente</td>
+                            <td>Conexiones cíclicas; estado oculto para memoria.</td>
+                            <td>Maneja secuencias de longitud variable; captura contexto y dependencias a largo plazo.</td>
+                            <td>Problemas de gradiente (desaparición/explosión); paralelización limitada; dificultad con dependencias muy largas.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LSTM</strong></td>
+                            <td>Red Neuronal Recurrente (con compuertas)</td>
+                            <td>Compuertas de entrada, olvido y salida; estado de celda.</td>
+                            <td>Supera problemas de gradiente; excelente captura de dependencias a largo plazo; flujo de gradientes estable.</td>
+                            <td>Mayor complejidad y costo computacional que RNNs simples.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GRU</strong></td>
+                            <td>Red Neuronal Recurrente (simplificada)</td>
+                            <td>Compuertas de actualización y reinicio.</td>
+                            <td>Similar rendimiento a LSTM con menos parámetros; entrenamiento más rápido; buen equilibrio eficiencia/rendimiento.</td>
+                            <td>Aún procesamiento secuencial; puede ser menos expresivo que LSTM en escenarios muy complejos.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transformer</strong></td>
+                            <td>Arquitectura basada en Atención</td>
+                            <td>Mecanismo de autoatención; procesamiento paralelo.</td>
+                            <td>Procesamiento paralelo (reducción de tiempo de entrenamiento); excelente captura de dependencias a muy largo plazo; escalabilidad.</td>
+                            <td>Alto costo computacional para secuencias extremadamente largas; requiere grandes volúmenes de datos; interpretabilidad desafiante.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Prophet</strong></td>
+                            <td>Modelo Aditivo (estadístico + ML)</td>
+                            <td>Descomposición en tendencia no lineal, estacionalidad (anual, semanal, diaria), festividades.</td>
+                            <td>Rápido, automático, robusto a datos faltantes/outliers; interpretable; fácil de usar para no expertos.</td>
+                            <td>Principalmente univariado; menos flexible para estructuras de autocorrelación complejas no capturadas por sus componentes.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>XGBoost</strong></td>
+                            <td>Gradient Boosting (árboles de decisión)</td>
+                            <td>Construcción secuencial de árboles que corrigen errores previos; crecimiento "depth-wise".</td>
+                            <td>Alta eficiencia y flexibilidad; captura relaciones no lineales; robusto; escalable; maneja variables exógenas.</td>
+                            <td>Requiere preprocesamiento para variables categóricas; puede ser más lento que LightGBM en GPU.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LightGBM</strong></td>
+                            <td>Gradient Boosting (árboles de decisión)</td>
+                            <td>Construcción secuencial de árboles; crecimiento "leaf-wise".</td>
+                            <td>Más rápido y eficiente que XGBoost; menor consumo de recursos; escalable; maneja variables exógenas.</td>
+                            <td>Puede ser más propenso al sobreajuste (requiere ajuste de `max_depth`); comunidad más pequeña que XGBoost.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">6. Implementación en Python: Librerías y Recursos</h2>
+            <p class="mb-4">Python se ha consolidado como el lenguaje preferido para el análisis de datos y la ciencia de datos, ofreciendo un ecosistema robusto de librerías para el pronóstico de series de tiempo.<a href="#ref-40" class="text-blue-600 hover:underline citation">[40]</a></p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">6.1. Librerías Fundamentales</h3>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Pandas:</strong> Esencial para estructurar datos en objetos `Series` o `DataFrame`, y para tareas de manipulación y preprocesamiento de datos, como el manejo de fechas, valores faltantes y remuestreo.<a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a>, <a href="#ref-24" class="text-blue-600 hover:underline citation">[24]</a>, <a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a>, <a href="#ref-31" class="text-blue-600 hover:underline citation">[31]</a>, <a href="#ref-40" class="text-blue-600 hover:underline citation">[40]</a>, <a href="#ref-41" class="text-blue-600 hover:underline citation">[41]</a>, <a href="#ref-42" class="text-blue-600 hover:underline citation">[42]</a>, <a href="#ref-43" class="text-blue-600 hover:underline citation">[43]</a>, <a href="#ref-44" class="text-blue-600 hover:underline citation">[44]</a>, <a href="#ref-45" class="text-blue-600 hover:underline citation">[45]</a>, <a href="#ref-46" class="text-blue-600 hover:underline citation">[46]</a> Proporciona funcionalidades clave para la indexación temporal, como `Timestamp` y `PeriodIndex`.<a href="#ref-24" class="text-blue-600 hover:underline citation">[24]</a>, <a href="#ref-43" class="text-blue-600 hover:underline citation">[43]</a>, <a href="#ref-44" class="text-blue-600 hover:underline citation">[44]</a>, <a href="#ref-47" class="text-blue-600 hover:underline citation">[47]</a></li>
+                <li><strong>NumPy:</strong> Fundamental para operaciones numéricas de alta velocidad, especialmente con arrays y matrices, que son la base de gran parte del cálculo en el análisis de series de tiempo.<a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a>, <a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a>, <a href="#ref-40" class="text-blue-600 hover:underline citation">[40]</a>, <a href="#ref-42" class="text-blue-600 hover:underline citation">[42]</a>, <a href="#ref-45" class="text-blue-600 hover:underline citation">[45]</a>, <a href="#ref-46" class="text-blue-600 hover:underline citation">[46]</a>, <a href="#ref-48" class="text-blue-600 hover:underline citation">[48]</a></li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">6.2. Librerías para Modelos Clásicos y Estadísticos</h3>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Statsmodels:</strong> Una biblioteca integral de Python para el modelado estadístico, que ofrece herramientas robustas para el análisis de series de tiempo.<a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a>, <a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a>, <a href="#ref-31" class="text-blue-600 hover:underline citation">[31]</a>, <a href="#ref-42" class="text-blue-600 hover:underline citation">[42]</a>, <a href="#ref-46" class="text-blue-600 hover:underline citation">[46]</a>, <a href="#ref-49" class="text-blue-600 hover:underline citation">[49]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Proporciona clases para modelos ARIMA, SARIMA y SARIMAX (`statsmodels.tsa.statespace.sarimax`) <a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a>, <a href="#ref-21" class="text-blue-600 hover:underline citation">[21]</a>, <a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a>, <a href="#ref-31" class="text-blue-600 hover:underline citation">[31]</a>, <a href="#ref-49" class="text-blue-600 hover:underline citation">[49]</a>, así como pruebas estadísticas (por ejemplo, el test ADF a través de `adfuller`) <a href="#ref-14" class="text-blue-600 hover:underline citation">[14]</a>, <a href="#ref-15" class="text-blue-600 hover:underline citation">[15]</a>, <a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a>, gráficos ACF/PACF, descomposición estacional y varios métodos de estimación (Máxima Verosimilitud, Filtro de Kalman).<a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a>, <a href="#ref-49" class="text-blue-600 hover:underline citation">[49]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>Basics of Statsmodel (YouTube): <a href="https://www.youtube.com/watch?v=vIfsu7z9bwI" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=vIfsu7z9bwI</a> <a href="#ref-50" class="text-blue-600 hover:underline citation">[50]</a></li>
+                                        <li>Time Series Regressions in Python with Statsmodels (YouTube):<a href="https://www.youtube.com/watch?v=Rq3lEPKvKKo" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=Rq3lEPKvKKo</a> <a href="#ref-51" class="text-blue-600 hover:underline citation">[51]</a></li>
+                                        <li>Time Series Modeling with Statsmodels (GeeksforGeeks): <a href="https://www.geeksforgeeks.org/deep-learning/time-series-modeling-with-statsmodels/" target="_blank" class="text-blue-600 hover:underline">https://www.geeksforgeeks.org/deep-learning/time-series-modeling-with-statsmodels/</a> <a href="#ref-16" class="text-blue-600 hover:underline citation">[16]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Cursos:</strong>
+                                    <ul>
+                                        <li>Time Series Forecasting with Python (New Horizons Course): <a href="https://www.newhorizons.com/course-outline/courseid/300200918/coursename/time-series-forecasting-with-python" target="_blank" class="text-blue-600 hover:underline">https://www.newhorizons.com/course-outline/courseid/300200918/coursename/time-series-forecasting-with-python</a> <a href="#ref-49" class="text-blue-600 hover:underline citation">[49]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>pmdarima:</strong> Una biblioteca estadística diseñada para suplir la carencia de capacidades de análisis de series de tiempo en Python, proporcionando la funcionalidad equivalente a la función `auto.arima` de R.<a href="#ref-52" class="text-blue-600 hover:underline citation">[52]</a>, <a href="#ref-53" class="text-blue-600 hover:underline citation">[53]</a>, <a href="#ref-54" class="text-blue-600 hover:underline citation">[54]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Selecciona automáticamente el mejor modelo ARIMA (p, d, q, P, D, Q) utilizando criterios de información como AICc.<a href="#ref-54" class="text-blue-600 hover:underline citation">[54]</a>, <a href="#ref-55" class="text-blue-600 hover:underline citation">[55]</a>, <a href="#ref-56" class="text-blue-600 hover:underline citation">[56]</a> Incluye pruebas estadísticas de estacionariedad y estacionalidad, utilidades de diferenciación, transformadores (Box-Cox, Fourier), descomposiciones de series de tiempo estacionales y utilidades de validación cruzada.<a href="#ref-53" class="text-blue-600 hover:underline citation">[53]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Documentación:</strong>
+                                    <ul>
+                                        <li>pmdarima.arima.auto_arima: <a href="https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.auto_arima.html" target="_blank" class="text-blue-600 hover:underline">https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.auto_arima.html</a> <a href="#ref-55" class="text-blue-600 hover:underline citation">[55]</a></li>
+                                        <li>Ejemplos de pmdarima: <a href="https://alkaline-ml.com/pmdarima/auto_examples/index.html" target="_blank" class="text-blue-600 hover:underline">https://alkaline-ml.com/pmdarima/auto_examples/index.html</a> <a href="#ref-57" class="text-blue-600 hover:underline citation">[57]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>Comprehensive Guide to Time Series Forecasting with Python (YouTube):<a href="https://www.youtube.com/watch?v=lKUDBXeOsBQ" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=lKUDBXeOsBQ</a> <a href="#ref-58" class="text-blue-600 hover:underline citation">[58]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Playlists de YouTube:</strong>
+                                    <ul>
+                                        <li>Time Series Analysis in Python (Data Ranger):<a href="https://m.youtube.com/playlist?list=PLtIY5kwXKny91_IbkqcIXuv6t1prQwFhO" target="_blank" class="text-blue-600 hover:underline">https://m.youtube.com/playlist?list=PLtIY5kwXKny91_IbkqcIXuv6t1prQwFhO</a> <a href="#ref-59" class="text-blue-600 hover:underline citation">[59]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">6.3. Librerías para Modelos de Machine Learning</h3>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Prophet (Meta Prophet):</strong> Una biblioteca de código abierto de Facebook (ahora Meta) para el pronóstico automático de series de tiempo univariadas con estacionalidad múltiple, crecimiento lineal/no lineal y efectos de festividades.<a href="#ref-31" class="text-blue-600 hover:underline citation">[31]</a>, <a href="#ref-32" class="text-blue-600 hover:underline citation">[32]</a>, <a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a>, <a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a> Es robusta ante datos faltantes y valores atípicos.<a href="#ref-32" class="text-blue-600 hover:underline citation">[32]</a>, <a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a>, <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Documentación Oficial:</strong>
+                                    <ul>
+                                        <li>Prophet Official Documentation (Python Quick Start): <a href="https://facebook.github.io/prophet/docs/quick_start.html" target="_blank" class="text-blue-600 hover:underline">https://facebook.github.io/prophet/docs/quick_start.html</a> <a href="#ref-35" class="text-blue-600 hover:underline citation">[35]</a></li>
+                                        <li>Prophet | Forecasting at scale (Official Website): <a href="https://facebook.github.io/prophet/" target="_blank" class="text-blue-600 hover:underline">https://facebook.github.io/prophet/</a> <a href="#ref-33" class="text-blue-600 hover:underline citation">[33]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>Python Time Series Forecasting Tutorial with Meta Prophet (YouTube): <a href="https://www.youtube.com/watch?v=nIoHj7ei2to" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=nIoHj7ei2to</a> <a href="#ref-60" class="text-blue-600 hover:underline citation">[60]</a></li>
+                                        <li>Time Series Forecasting with Facebook Prophet (YouTube - low code): <a href="https://www.youtube.com/watch?v=xF8w2Pz9OQo" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=xF8w2Pz9OQo</a> <a href="#ref-61" class="text-blue-600 hover:underline citation">[61]</a></li>
+                                        <li>Time Series Prediction and Forecasting using Facebook Prophet (YouTube - beginners):<a href="https://www.youtube.com/watch?v=2vF2xTUXJwM&pp=0gcJCU8JAYcqIYzv" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=2vF2xTUXJwM&pp=0gcJCU8JAYcqIYzv</a> <a href="#ref-62" class="text-blue-600 hover:underline citation">[62]</a></li>
+                                        <li>Time Series Forecasting With Prophet in Python (Machine Learning Mastery): <a href="https://machinelearningmastery.com/time-series-forecasting-with-prophet-in-python/" target="_blank" class="text-blue-600 hover:underline">https://machinelearningmastery.com/time-series-forecasting-with-prophet-in-python/</a> <a href="#ref-37" class="text-blue-600 hover:underline citation">[37]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Cursos:</strong>
+                                    <ul>
+                                        <li>Time Series Forecasting with Facebook Prophet in Python (Coursera): <a href="https://www.coursera.org/learn/packt-time-series-forecasting-with-facebook-prophet-in-python-7sw5w" target="_blank" class="text-blue-600 hover:underline">https://www.coursera.org/learn/packt-time-series-forecasting-with-facebook-prophet-in-python-7sw5w</a> <a href="#ref-63" class="text-blue-600 hover:underline citation">[63]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>XGBoost / LightGBM:</strong> Algoritmos de <em>gradient boosting</em> para clasificación y regresión, adaptables para el pronóstico de series de tiempo.<a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a>, <a href="#ref-38" class="text-blue-600 hover:underline citation">[38]</a>, <a href="#ref-39" class="text-blue-600 hover:underline citation">[39]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Pueden incluir variables exógenas, capturar relaciones no lineales y escalar a grandes conjuntos de datos.<a href="#ref-39" class="text-blue-600 hover:underline citation">[39]</a> La biblioteca `skforecast` simplifica su uso para series de tiempo.<a href="#ref-39" class="text-blue-600 hover:underline citation">[39]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>How to Use XGBoost and LGBM for Time Series Forecasting? (365 Data Science): <a href="https://365datascience.com/tutorials/python-tutorials/xgboost-lgbm/" target="_blank" class="text-blue-600 hover:underline">https://365datascience.com/tutorials/python-tutorials/xgboost-lgbm/</a> <a href="#ref-34" class="text-blue-600 hover:underline citation">[34]</a></li>
+                                        <li>Forecasting time series with gradient boosting: Skforecast, XGBoost, LightGBM, Scikit-learn and CatBoost (cienciadedatos.net): <a href="https://cienciadedatos.net/documentos/py39-forecasting-time-series-with-skforecast-xgboost-lightgbm-catboost" target="_blank" class="text-blue-600 hover:underline">https://cienciadedatos.net/documentos/py39-forecasting-time-series-with-skforecast-xgboost-lightgbm-catboost</a> <a href="#ref-39" class="text-blue-600 hover:underline citation">[39]</a></li>
+                                        <li>XGBoost vs LightGBM (neptune.ai blog): <a href="https://neptune.ai/blog/xgboost-vs-lightgbm" target="_blank" class="text-blue-600 hover:underline">https://neptune.ai/blog/xgboost-vs-lightgbm</a> <a href="#ref-38" class="text-blue-600 hover:underline citation">[38]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>scikit-learn:</strong> Aunque no es una biblioteca dedicada exclusivamente a series de tiempo, proporciona algoritmos fundamentales de ML (por ejemplo, `RandomForestRegressor`, `SVR`) que pueden aplicarse a series de tiempo después de transformar los datos en un problema de aprendizaje supervisado (por ejemplo, utilizando características de retardo).<a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a> `skforecast` actúa como un <em>wrapper</em> para integrar regresores de `scikit-learn` para el pronóstico de series de tiempo.<a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>Time Series Forecasting with Python (blog.trainindata.com): <a href="https://www.blog.trainindata.com/time-series-forecasting-python/" target="_blank" class="text-blue-600 hover:underline">https://www.blog.trainindata.com/time-series-forecasting-python/</a> <a href="#ref-25" class="text-blue-600 hover:underline citation">[25]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">6.4. Librerías para Modelos de Deep Learning</h3>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>TensorFlow/Keras:</strong> Marcos de código abierto populares para el aprendizaje profundo, incluyendo el pronóstico de series de tiempo con RNN, LSTM, GRU y Transformers.<a href="#ref-48" class="text-blue-600 hover:underline citation">[48]</a>, <a href="#ref-49" class="text-blue-600 hover:underline citation">[49]</a>, <a href="#ref-64" class="text-blue-600 hover:underline citation">[64]</a>, <a href="#ref-65" class="text-blue-600 hover:underline citation">[65]</a>, <a href="#ref-66" class="text-blue-600 hover:underline citation">[66]</a>, <a href="#ref-67" class="text-blue-600 hover:underline citation">[67]</a>, <a href="#ref-68" class="text-blue-600 hover:underline citation">[68]</a>, <a href="#ref-69" class="text-blue-600 hover:underline citation">[69]</a> Keras es una API de alto nivel para TensorFlow.<a href="#ref-66" class="text-blue-600 hover:underline citation">[66]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Permiten construir y entrenar diversas arquitecturas de redes neuronales para la predicción de series de tiempo, manejar la preparación de datos (conjuntos de datos de ventana deslizante) y evaluar modelos.<a href="#ref-48" class="text-blue-600 hover:underline citation">[48]</a>, <a href="#ref-64" class="text-blue-600 hover:underline citation">[64]</a>, <a href="#ref-66" class="text-blue-600 hover:underline citation">[66]</a>, <a href="#ref-68" class="text-blue-600 hover:underline citation">[68]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>Mastering Time Series Forecasting: Build a Transformer Model in Keras (YouTube):<a href="https://www.youtube.com/watch?v=LNydD9ZemZ8" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=LNydD9ZemZ8</a> <a href="#ref-64" class="text-blue-600 hover:underline citation">[64]</a></li>
+                                        <li>Python Tutorial (Tensorflow, Keras) - LSTM for beginners (YouTube):<a href="https://www.youtube.com/watch?v=mscyUYOF0cw" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=mscyUYOF0cw</a> <a href="#ref-65" class="text-blue-600 hover:underline citation">[65]</a></li>
+                                        <li>How to predict time-series data using a Recurrent Neural Network (GRU / LSTM) in TensorFlow and Keras (YouTube): <a href="https://www.youtube.com/watch?v=6f67zrH-_IE" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=6f67zrH-_IE</a> <a href="#ref-69" class="text-blue-600 hover:underline citation">[69]</a></li>
+                                        <li>LSTM Time Series Forecasting model using TensorFlow and Python (YouTube):<a href="https://www.youtube.com/watch?v=94PlBzgeq90" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=94PlBzgeq90</a> <a href="#ref-67" class="text-blue-600 hover:underline citation">[67]</a></li>
+                                        <li>Time Series Forecasting with TensorFlow (mlq.ai blog): <a href="https://blog.mlq.ai/time-series-forecasting-tensorflow/" target="_blank" class="text-blue-600 hover:underline">https://blog.mlq.ai/time-series-forecasting-tensorflow/</a> <a href="#ref-48" class="text-blue-600 hover:underline citation">[48]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Cursos:</strong>
+                                    <ul>
+                                        <li>Sequences, Time Series and Prediction (Coursera - TensorFlow Specialization): <a href="https://www.coursera.org/learn/tensorflow-sequences-time-series-and-prediction" target="_blank" class="text-blue-600 hover:underline">https://www.coursera.org/learn/tensorflow-sequences-time-series-and-prediction</a> <a href="#ref-68" class="text-blue-600 hover:underline citation">[68]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>PyTorch:</strong> Otra biblioteca líder de aprendizaje automático de código abierto, que ofrece flexibilidad para construir redes neuronales personalizadas para el pronóstico de series de tiempo, especialmente con LSTM y GRU.<a href="#ref-45" class="text-blue-600 hover:underline citation">[45]</a>, <a href="#ref-70" class="text-blue-600 hover:underline citation">[70]</a>, <a href="#ref-71" class="text-blue-600 hover:underline citation">[71]</a>, <a href="#ref-72" class="text-blue-600 hover:underline citation">[72]</a>, <a href="#ref-73" class="text-blue-600 hover:underline citation">[73]</a>, <a href="#ref-74" class="text-blue-600 hover:underline citation">[74]</a>, <a href="#ref-75" class="text-blue-600 hover:underline citation">[75]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Permite construir modelos LSTM, bucles de entrenamiento y evaluar el rendimiento para la predicción de series de tiempo.<a href="#ref-45" class="text-blue-600 hover:underline citation">[45]</a>, <a href="#ref-73" class="text-blue-600 hover:underline citation">[73]</a> `pytorch-forecasting` proporciona una API de alto nivel para modelos de vanguardia como N-BEATS, N-HiTS, DeepAR y TFT.<a href="#ref-72" class="text-blue-600 hover:underline citation">[72]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>LSTM Time Series Prediction Tutorial using PyTorch in Python (YouTube - Coronavirus Cases):<a href="https://www.youtube.com/watch?v=8A6TEjG2DNw" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=8A6TEjG2DNw</a> <a href="#ref-71" class="text-blue-600 hover:underline citation">[71]</a></li>
+                                        <li>Time Series Forecasting using Pytorch (GeeksforGeeks): <a href="https://www.geeksforgeeks.org/data-analysis/time-series-forecasting-using-pytorch/" target="_blank" class="text-blue-600 hover:underline">https://www.geeksforgeeks.org/data-analysis/time-series-forecasting-using-pytorch/</a> <a href="#ref-45" class="text-blue-600 hover:underline citation">[45]</a></li>
+                                        <li>PyTorch Time Sequence Prediction With LSTM - Forecasting Tutorial (YouTube - Python Engineer):<a href="https://www.youtube.com/watch?v=AvKSPZ7oyVg" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=AvKSPZ7oyVg</a> <a href="#ref-75" class="text-blue-600 hover:underline citation">[75]</a></li>
+                                        <li>PyTorch Time Series Forecasting series (YouTube - Airline Passenger dataset):<a href="https://www.youtube.com/watch?v=OiuIDrg7McU" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=OiuIDrg7McU</a> <a href="#ref-74" class="text-blue-600 hover:underline citation">[74]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Documentación:</strong>
+                                    <ul>
+                                        <li>PyTorch Forecasting Documentation: <a href="https://pytorch-forecasting.readthedocs.io" target="_blank" class="text-blue-600 hover:underline">https://pytorch-forecasting.readthedocs.io</a> <a href="#ref-72" class="text-blue-600 hover:underline citation">[72]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Cursos:</strong>
+                                    <ul>
+                                        <li>PyTorch Time Sequence Prediction With LSTM - Forecasting Tutorial (Class Central): <a href="https://www.classcentral.com/course/youtube-pytorch-time-sequence-prediction-with-lstm-forecasting-tutorial-117187" target="_blank" class="text-blue-600 hover:underline">https://www.classcentral.com/course/youtube-pytorch-time-sequence-prediction-with-lstm-forecasting-tutorial-117187</a> <a href="#ref-73" class="text-blue-600 hover:underline citation">[73]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>Darts:</strong> Una biblioteca de Python para la manipulación y el pronóstico de series de tiempo, que proporciona una API unificada para varios modelos, desde clásicos (ARIMA) hasta redes neuronales profundas.<a href="#ref-24" class="text-blue-600 hover:underline citation">[24]</a>, <a href="#ref-36" class="text-blue-600 hover:underline citation">[36]</a>, <a href="#ref-41" class="text-blue-600 hover:underline citation">[41]</a>, <a href="#ref-47" class="text-blue-600 hover:underline citation">[47]</a>, <a href="#ref-76" class="text-blue-600 hover:underline citation">[76]</a>, <a href="#ref-77" class="text-blue-600 hover:underline citation">[77]</a>, <a href="#ref-78" class="text-blue-600 hover:underline citation">[78]</a>, <a href="#ref-79" class="text-blue-600 hover:underline citation">[79]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Manejo de datos sin problemas con Pandas/NumPy/PyTorch, utilidades de preprocesamiento (imputación de valores faltantes, escalado, extracción de características), pronóstico probabilístico, <em>backtesting</em>, búsqueda en cuadrícula y selección automática de modelos.<a href="#ref-24" class="text-blue-600 hover:underline citation">[24]</a>, <a href="#ref-36" class="text-blue-600 hover:underline citation">[36]</a> Permite el entrenamiento en múltiples series y covariables, escala a grandes conjuntos de datos y utiliza GPU.<a href="#ref-24" class="text-blue-600 hover:underline citation">[24]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>Darts: Time Series Made Easy in Python (Unit8 Blog): <a href="https://unit8.com/resources/darts-time-series-made-easy-in-python/" target="_blank" class="text-blue-600 hover:underline">https://unit8.com/resources/darts-time-series-made-easy-in-python/</a> <a href="#ref-24" class="text-blue-600 hover:underline citation">[24]</a></li>
+                                        <li>Darts Quickstart (Official Docs): <a href="https://unit8co.github.io/darts/quickstart/00-quickstart.html" target="_blank" class="text-blue-600 hover:underline">https://unit8co.github.io/darts/quickstart/00-quickstart.html</a> <a href="#ref-47" class="text-blue-600 hover:underline citation">[47]</a></li>
+                                        <li>Time Series Forecasting in Python - Darts (YouTube):<a href="https://www.youtube.com/watch?v=YkLrR74LvJU" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=YkLrR74LvJU</a> <a href="#ref-76" class="text-blue-600 hover:underline citation">[76]</a></li>
+                                        <li>Time-Series Forecasting with Darts: A Hands-On Tutorial (Magnimind Academy): <a href="https://magnimindacademy.com/blog/time-series-forecasting-with-darts-a-hands-on-tutorial/" target="_blank" class="text-blue-600 hover:underline">https://magnimindacademy.com/blog/time-series-forecasting-with-darts-a-hands-on-tutorial/</a> <a href="#ref-36" class="text-blue-600 hover:underline citation">[36]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Playlists de YouTube:</strong>
+                                    <ul>
+                                        <li>Darts by Unit8:<a href="https://www.youtube.com/playlist?list=PLxzpq1ouJ5mchBJPUmbIxB7CNoX4T4ZKz" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/playlist?list=PLxzpq1ouJ5mchBJPUmbIxB7CNoX4T4ZKz</a> <a href="#ref-79" class="text-blue-600 hover:underline citation">[79]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>sktime:</strong> Un marco unificado para el aprendizaje automático con datos de series de tiempo, que proporciona herramientas consistentes y componibles para el pronóstico, la clasificación y la transformación.<a href="#ref-43" class="text-blue-600 hover:underline citation">[43]</a>, <a href="#ref-44" class="text-blue-600 hover:underline citation">[44]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Interfaz similar a scikit-learn para algoritmos de pronóstico clásicos y de ML, admite pronóstico jerárquico, pronóstico univariado/multivariado y esquemas de ajuste temporal.<a href="#ref-43" class="text-blue-600 hover:underline citation">[43]</a>, <a href="#ref-44" class="text-blue-600 hover:underline citation">[44]</a> Se integra con `pmdarima` para ARIMA/SARIMAX y `statsmodels` para pruebas de causalidad de Granger.<a href="#ref-43" class="text-blue-600 hover:underline citation">[43]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Documentación Oficial:</strong>
+                                    <ul>
+                                        <li>sktime Documentation (Tutorials section): <a href="https://www.sktime.net/en/latest/tutorials.html" target="_blank" class="text-blue-600 hover:underline">https://www.sktime.net/en/latest/tutorials.html</a> <a href="#ref-80" class="text-blue-600 hover:underline citation">[80]</a></li>
+                                        <li>Forecasting with sktime (Official Docs): <a href="https://www.sktime.net/en/latest/examples/01_forecasting.html" target="_blank" class="text-blue-600 hover:underline">https://www.sktime.net/en/latest/examples/01_forecasting.html</a> <a href="#ref-44" class="text-blue-600 hover:underline citation">[44]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Tutoriales:</strong>
+                                    <ul>
+                                        <li>Multivariate time series forecasting with sktime (IBM Tutorial): <a href="https://www.ibm.com/think/tutorials/sktime-multivariate-time-series-forecasting" target="_blank" class="text-blue-600 hover:underline">https://www.ibm.com/think/tutorials/sktime-multivariate-time-series-forecasting</a> <a href="#ref-43" class="text-blue-600 hover:underline citation">[43]</a></li>
+                                    </ul>
+                                </li>
+                                <li><strong>Playlists de YouTube:</strong>
+                                    <ul>
+                                        <li>Practical Time Series with Machine Learning in sktime:<a href="https://www.youtube.com/playlist?list=PL3odEuBfDQmlao4FVS1vitCPgDAg_FTjm" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/playlist?list=PL3odEuBfDQmlao4FVS1vitCPgDAg_FTjm</a> <a href="#ref-81" class="text-blue-600 hover:underline citation">[81]</a></li>
+                                        <li>PyData Global 2023 - sktime: A Unified Framework for Time Series Machine Learning:<a href="https://www.youtube.com/watch?v=_WNLjqrBaBY" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=_WNLjqrBaBY</a> <a href="#ref-82" class="text-blue-600 hover:underline citation">[82]</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>TSLib (Time Series Library):</strong> Una biblioteca de código abierto para investigadores de aprendizaje profundo, especialmente para el análisis profundo de series de tiempo.<a href="#ref-83" class="text-blue-600 hover:underline citation">[83]</a>
+                    <ul class="list-circle pl-5 mt-2">
+                        <li><strong>Capacidades:</strong> Proporciona una base de código limpia para evaluar modelos avanzados de aprendizaje profundo de series de tiempo o desarrollar nuevos modelos, cubriendo tareas como el pronóstico a largo/corto plazo, la imputación, la detección de anomalías y la clasificación.<a href="#ref-83" class="text-blue-600 hover:underline citation">[83]</a> Incluye modelos basados en Transformer (TSMixer, iTransformer, PatchTST, ETSformer, Autoformer) y modelos basados en RNN (SegRNN).<a href="#ref-83" class="text-blue-600 hover:underline citation">[83]</a></li>
+                        <li><strong>Recursos de Aprendizaje:</strong>
+                            <ul class="list-square pl-5 mt-2">
+                                <li><strong>Repositorio GitHub de TSLib:</strong><a href="https://github.com/thuml/Time-Series-Library" target="_blank" class="text-blue-600 hover:underline">https://github.com/thuml/Time-Series-Library</a> <a href="#ref-83" class="text-blue-600 hover:underline citation">[83]</a></li>
+                                <li>Incluye un tutorial detallado para TimesNet y la biblioteca, amigable para principiantes.<a href="#ref-83" class="text-blue-600 hover:underline citation">[83]</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">6.5. Ejemplos de Código</h3>
+            <p class="mb-4">A continuación, se presenta un ejemplo de código en Python que demuestra el análisis y pronóstico de una serie de tiempo utilizando SARIMAX de `statsmodels` y Prophet de Meta. Este código ilustra los pasos clave, desde la generación de datos sintéticos y la verificación de estacionariedad hasta el ajuste del modelo y la visualización de los pronósticos.</p>
+            <div class="code-block">
+<pre><code><span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">from</span> statsmodels.tsa.statespace.sarimax <span class="keyword">import</span> SARIMAX
+<span class="keyword">from</span> statsmodels.graphics.tsaplots <span class="keyword">import</span> plot_acf, plot_pacf
+<span class="keyword">from</span> statsmodels.tsa.stattools <span class="keyword">import</span> adfuller
+<span class="keyword">from</span> prophet <span class="keyword">import</span> Prophet
+<span class="keyword">import</span> warnings
+
+warnings.filterwarnings(<span class="string">'ignore'</span>) <span class="comment"># Ignorar advertencias para una salida más limpia</span>
+
+<span class="comment"># --- 1. Generación de Datos Sintéticos (o carga de datos reales) ---</span>
+<span class="comment"># Para este ejemplo, se utilizará un conjunto de datos sintéticos con tendencia y estacionalidad.</span>
+<span class="comment"># En un caso real, se cargarían los datos con pd.read_csv o similar.</span>
+np.random.seed(<span class="number">42</span>)
+n_points = <span class="number">120</span> <span class="comment"># 10 años de datos mensuales</span>
+dates = pd.date_range(start=<span class="string">'2010-01-01'</span>, periods=n_points, freq=<span class="string">'MS'</span>)
+<span class="comment"># Tendencia lineal</span>
+trend = np.linspace(<span class="number">0</span>, <span class="number">20</span>, n_points)
+<span class="comment"># Estacionalidad (ciclo anual)</span>
+seasonality = <span class="number">5</span> * np.sin(np.linspace(<span class="number">0</span>, <span class="number">3</span> * np.pi, n_points) * <span class="number">4</span>)
+<span class="comment"># Ruido aleatorio</span>
+noise = np.random.normal(<span class="number">0</span>, <span class="number">1.5</span>, n_points)
+<span class="comment"># Serie de tiempo combinada</span>
+data_series = trend + seasonality + noise
+df = pd.DataFrame({<span class="string">'Date'</span>: dates, <span class="string">'Value'</span>: data_series})
+df.set_index(<span class="string">'Date'</span>, inplace=<span class="keyword">True</span>)
+
+plt.figure(figsize=(<span class="number">12</span>, <span class="number">6</span>))
+plt.plot(df.index, df[<span class="string">'Value'</span>], label=<span class="string">'Serie de Tiempo Sintética'</span>)
+plt.title(<span class="string">'Serie de Tiempo Sintética con Tendencia y Estacionalidad'</span>)
+plt.xlabel(<span class="string">'Fecha'</span>)
+plt.ylabel(<span class="string">'Valor'</span>)
+plt.legend()
+plt.grid(<span class="keyword">True</span>)
+plt.show()
+
+<span class="comment"># --- 2. Análisis de Estacionariedad (Test ADF) ---</span>
+<span class="function">print</span>(<span class="string">"\n--- Test de Dickey-Fuller Aumentado (ADF) ---"</span>)
+adf_result = adfuller(df[<span class="string">'Value'</span>])
+<span class="function">print</span>(<span class="string">f'ADF Statistic: {adf_result[0]:.4f}'</span>)
+<span class="function">print</span>(<span class="string">f'p-value: {adf_result[1]:.4f}'</span>)
+d_order = <span class="number">0</span>
+<span class="keyword">if</span> adf_result[<span class="number">1</span>] > <span class="number">0.05</span>:
+    <span class="function">print</span>(<span class="string">"La serie no es estacionaria. Aplicando diferenciación."</span>)
+    df_diff = df[<span class="string">'Value'</span>].diff().dropna()
+    adf_result_diff = adfuller(df_diff)
+    <span class="function">print</span>(<span class="string">f'ADF Statistic (diferenciada): {adf_result_diff[0]:.4f}'</span>)
+    <span class="function">print</span>(<span class="string">f'p-value (diferenciada): {adf_result_diff[1]:.4f}'</span>)
+    <span class="keyword">if</span> adf_result_diff[<span class="number">1</span>] <= <span class="number">0.05</span>:
+        <span class="function">print</span>(<span class="string">"La serie diferenciada es estacionaria."</span>)
+        d_order = <span class="number">1</span>
+    <span class="keyword">else</span>:
+        <span class="function">print</span>(<span class="string">"Se requiere más diferenciación. Para este ejemplo, se usará d=1."</span>)
+        d_order = <span class="number">1</span> <span class="comment"># Fallback, en un caso real se ajustaría</span>
+
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"La serie es estacionaria."</span>)
+
+<span class="comment"># --- 3. Identificación de Órdenes (ACF/PACF) ---</span>
+<span class="comment"># Usar la serie original si es estacionaria, o la diferenciada</span>
+series_for_acf_pacf = df_diff <span class="keyword">if</span> d_order > <span class="number">0</span> <span class="keyword">else</span> df[<span class="string">'Value'</span>]
+
+plt.figure(figsize=(<span class="number">14</span>, <span class="number">6</span>))
+plt.subplot(<span class="number">121</span>)
+plot_acf(series_for_acf_pacf, lags=<span class="number">40</span>, ax=plt.gca(), title=<span class="string">'Función de Autocorrelación (ACF)'</span>)
+plt.subplot(<span class="number">122</span>)
+plot_pacf(series_for_acf_pacf, lags=<span class="number">40</span>, ax=plt.gca(), title=<span class="string">'Función de Autocorrelación Parcial (PACF)'</span>)
+plt.tight_layout()
+plt.show()
+<span class="function">print</span>(<span class="string">"\n--- Interpretación de ACF/PACF para determinar p, q, P, Q ---"</span>)
+<span class="function">print</span>(<span class="string">"Observar los cortes y decaimientos para estimar los órdenes AR y MA, tanto no estacionales como estacionales."</span>)
+<span class="function">print</span>(<span class="string">"Para este ejemplo, se asumirán órdenes basados en la observación de una serie con tendencia y estacionalidad mensual."</span>)
+<span class="function">print</span>(<span class="string">"Este es un paso manual que 'auto_arima' de pmdarima automatiza en la práctica."</span>)
+p, q = <span class="number">1</span>, <span class="number">1</span> <span class="comment"># Órdenes no estacionales (ejemplo)</span>
+P, Q = <span class="number">1</span>, <span class="number">1</span> <span class="comment"># Órdenes estacionales (ejemplo)</span>
+s = <span class="number">12</span> <span class="comment"># Periodo estacional (mensual)</span>
+
+<span class="comment"># --- 4. Modelado SARIMAX ---</span>
+<span class="function">print</span>(<span class="string">"\n--- Modelado SARIMAX ---"</span>)
+<span class="comment"># Dividir datos en entrenamiento y prueba</span>
+train_size = <span class="function">int</span>(<span class="function">len</span>(df) * <span class="number">0.8</span>)
+train_data, test_data = df.iloc[:train_size], df.iloc[train_size:]
+
+<span class="comment"># Ajustar el modelo SARIMAX</span>
+<span class="comment"># order=(p,d,q), seasonal_order=(P,D,Q,s)</span>
+<span class="comment"># D=1 para estacionalidad mensual diferenciada, asumiendo que la estacionalidad también requiere diferenciación</span>
+model = SARIMAX(train_data[<span class="string">'Value'</span>],
+                order=(p, d_order, q),
+                seasonal_order=(P, <span class="number">1</span>, Q, s), <span class="comment"># D=1 para estacionalidad mensual diferenciada</span>
+                enforce_stationarity=<span class="keyword">False</span>,
+                enforce_invertibility=<span class="keyword">False</span>)
+results = model.fit(disp=<span class="keyword">False</span>) <span class="comment"># disp=False para no mostrar la salida detallada de optimización</span>
+<span class="function">print</span>(results.summary())
+
+<span class="comment"># --- 5. Pronóstico con SARIMAX ---</span>
+forecast_steps = <span class="function">len</span>(test_data)
+sarimax_forecast = results.get_forecast(steps=forecast_steps)
+sarimax_predicted_mean = sarimax_forecast.predicted_mean
+sarimax_conf_int = sarimax_forecast.conf_int()
+
+plt.figure(figsize=(<span class="number">12</span>, <span class="number">6</span>))
+plt.plot(train_data.index, train_data[<span class="string">'Value'</span>], label=<span class="string">'Datos de Entrenamiento'</span>)
+plt.plot(test_data.index, test_data[<span class="string">'Value'</span>], label=<span class="string">'Datos Reales (Prueba)'</span>, color=<span class="string">'orange'</span>)
+plt.plot(sarimax_predicted_mean.index, sarimax_predicted_mean, label=<span class="string">'Pronóstico SARIMAX'</span>, color=<span class="string">'red'</span>, linestyle=<span class="string">'--'</span>)
+plt.fill_between(sarimax_conf_int.index,
+                 sarimax_conf_int.iloc[:, <span class="number">0</span>],
+                 sarimax_conf_int.iloc[:, <span class="number">1</span>], color=<span class="string">'pink'</span>, alpha=<span class="number">0.3</span>, label=<span class="string">'Intervalo de Confianza 95%'</span>)
+plt.title(<span class="string">'Pronóstico SARIMAX de Serie de Tiempo Sintética'</span>)
+plt.xlabel(<span class="string">'Fecha'</span>)
+plt.ylabel(<span class="string">'Valor'</span>)
+plt.legend()
+plt.grid(<span class="keyword">True</span>)
+plt.show()
+
+<span class="comment"># --- 6. Modelado con Prophet ---</span>
+<span class="function">print</span>(<span class="string">"\n--- Modelado con Prophet ---"</span>)
+<span class="comment"># Prophet requiere columnas 'ds' (fecha) y 'y' (valor)</span>
+prophet_df = df.reset_index().rename(columns={<span class="string">'Date'</span>: <span class="string">'ds'</span>, <span class="string">'Value'</span>: <span class="string">'y'</span>})
+train_prophet_df = prophet_df.iloc[:train_size]
+test_prophet_df = prophet_df.iloc[train_size:]
+
+m = Prophet(seasonality_mode=<span class="string">'multiplicative'</span>,
+            changepoint_prior_scale=<span class="number">0.05</span>) <span class="comment"># Ajustar para mayor flexibilidad en la tendencia</span>
+m.fit(train_prophet_df)
+
+<span class="comment"># Crear dataframe para el pronóstico futuro</span>
+future = m.make_future_dataframe(periods=forecast_steps, freq=<span class="string">'MS'</span>)
+prophet_forecast = m.predict(future)
+
+<span class="comment"># Filtrar el pronóstico para el período de prueba</span>
+prophet_forecast_test = prophet_forecast[prophet_forecast[<span class="string">'ds'</span>].isin(test_prophet_df[<span class="string">'ds'</span>])]
+
+<span class="comment"># --- 7. Visualización del Pronóstico con Prophet ---</span>
+fig = m.plot(prophet_forecast)
+plt.title(<span class="string">'Pronóstico Prophet de Serie de Tiempo Sintética'</span>)
+plt.xlabel(<span class="string">'Fecha'</span>)
+plt.ylabel(<span class="string">'Valor'</span>)
+plt.show()
+
+fig2 = m.plot_components(prophet_forecast)
+plt.suptitle(<span class="string">'Componentes del Pronóstico Prophet'</span>, y=<span class="number">1.02</span>)
+plt.show()
+
+<span class="function">print</span>(<span class="string">"\n--- Comparación de Pronósticos ---"</span>)
+<span class="comment"># Evaluar la precisión (ej. RMSE, MAE)</span>
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error, mean_absolute_error
+
+<span class="comment"># SARIMAX</span>
+<span class="comment"># Asegurarse de que las series tengan la misma longitud para la evaluación</span>
+sarimax_rmse = np.sqrt(mean_squared_error(test_data[<span class="string">'Value'</span>], sarimax_predicted_mean))
+sarimax_mae = mean_absolute_error(test_data[<span class="string">'Value'</span>], sarimax_predicted_mean)
+<span class="function">print</span>(<span class="string">f"SARIMAX RMSE: {sarimax_rmse:.4f}"</span>)
+<span class="function">print</span>(<span class="string">f"SARIMAX MAE: {sarimax_mae:.4f}"</span>)
+
+<span class="comment"># Prophet</span>
+prophet_rmse = np.sqrt(mean_squared_error(test_prophet_df[<span class="string">'y'</span>], prophet_forecast_test[<span class="string">'yhat'</span>]))
+prophet_mae = mean_absolute_error(test_prophet_df[<span class="string">'y'</span>], prophet_forecast_test[<span class="string">'yhat'</span>])
+<span class="function">print</span>(<span class="string">f"Prophet RMSE: {prophet_rmse:.4f}"</span>)
+<span class="function">print</span>(<span class="string">f"Prophet MAE: {prophet_mae:.4f}"</span>)
+
+<span class="function">print</span>(<span class="string">"\nEste código demuestra los pasos básicos para analizar y pronosticar una serie de tiempo usando SARIMAX y Prophet en Python."</span>)
+<span class="function">print</span>(<span class="string">"La elección de p, d, q, P, D, Q para SARIMAX se hizo manualmente para este ejemplo; en la práctica, 'auto_arima' de pmdarima o la optimización de hiperparámetros serían más adecuados."</span>)
+</code></pre>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">7. Conclusiones y Recomendaciones</h2>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">7.1. Síntesis de Modelos y Enfoques</h3>
+            <p class="mb-4">El análisis y pronóstico de series de tiempo ha evolucionado significativamente, abarcando desde metodologías estadísticas clásicas hasta algoritmos avanzados de aprendizaje automático y aprendizaje profundo.</p>
+            <p class="mb-4">Los <strong>modelos clásicos</strong>, como ARIMA, la suavización exponencial (Holt-Winters) y GARCH, constituyen una base sólida. ARIMA destaca por su capacidad para modelar estructuras de autocorrelación complejas una vez que se logra la estacionariedad. La suavización exponencial ofrece simplicidad y un rendimiento robusto para series con tendencias y estacionalidades bien definidas. Los modelos GARCH son indispensables para capturar y pronosticar la volatilidad variable en el tiempo, especialmente en datos financieros.</p>
+            <p class="mb-4">Los <strong>modelos de Machine Learning</strong>, como Prophet, XGBoost y LightGBM, brindan mayor flexibilidad para patrones no lineales y el manejo automático de características como festividades y puntos de cambio (Prophet). Los modelos de <em>gradient boosting</em> (XGBoost, LightGBM) sobresalen en la integración de numerosas variables exógenas y la captura de interacciones complejas, a menudo logrando una mayor precisión predictiva en grandes conjuntos de datos.</p>
+            <p class="mb-4">Los <strong>modelos de Deep Learning</strong>, incluyendo RNN, LSTM, GRU y Transformers, representan la vanguardia. Son capaces de aprender dependencias altamente complejas, no lineales y de largo alcance. LSTM y GRU abordan el problema de la desaparición de gradientes, haciéndolos adecuados para secuencias largas. Los Transformers, con sus mecanismos de atención, ofrecen procesamiento paralelo y una captura superior de dependencias a largo alcance, empujando los límites para series de tiempo muy largas y de alta dimensionalidad.</p>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">7.2. Consideraciones Clave para la Selección y Aplicación de Modelos</h3>
+            <p class="mb-4">La elección del modelo más adecuado para una tarea de pronóstico de series de tiempo depende de varias consideraciones fundamentales:</p>
+            <ul class="list-disc pl-5 mb-4">
+                <li><strong>Naturaleza de los Datos:</strong> La presencia y características de la tendencia, estacionalidad, ciclos y componentes irregulares son primordiales. La estacionariedad (o la capacidad de lograrla mediante diferenciación) determina la aplicabilidad de muchos modelos clásicos. La presencia de heterocedasticidad condicional exige modelos tipo GARCH.</li>
+                <li><strong>Complejidad del Patrón:</strong> Para patrones simples y lineales, los modelos clásicos suelen ser suficientes y más interpretables. Para no linealidades complejas, estacionalidades múltiples o muchas variables exógenas, los modelos de ML/DL pueden ofrecer un rendimiento superior.</li>
+                <li><strong>Volumen y Dimensionalidad de los Datos:</strong> Los modelos de aprendizaje profundo suelen requerir grandes conjuntos de datos para entrenarse eficazmente debido a su gran número de parámetros. Los modelos de ML como XGBoost/LightGBM escalan bien a grandes conjuntos de datos y pueden manejar muchas características.</li>
+                <li><strong>Interpretabilidad vs. Precisión:</strong> Los modelos clásicos generalmente ofrecen una mayor interpretabilidad (por ejemplo, parámetros ARIMA, componentes de Holt-Winters). Los modelos de ML/DL más complejos a menudo logran una mayor precisión predictiva, pero pueden ser "cajas negras". Prophet logra un equilibrio con sus componentes interpretables.</li>
+                <li><strong>Horizonte de Pronóstico:</strong> Los pronósticos a corto plazo suelen ser más precisos. Para pronósticos a largo plazo, la incertidumbre aumenta, y los modelos capaces de capturar dependencias a largo alcance (por ejemplo, LSTM, Transformers) o un modelado de tendencias robusto (por ejemplo, Prophet) podrían ser preferibles.</li>
+                <li><strong>Recursos Computacionales:</strong> Los modelos de aprendizaje profundo, especialmente los Transformers, pueden ser computacionalmente intensivos y pueden requerir unidades de procesamiento gráfico (GPU).</li>
+                <li><strong>Disponibilidad de Variables Exógenas:</strong> Si factores externos influyen significativamente en la serie, los modelos ARIMAX o los modelos de ML (XGBoost, LightGBM, Prophet con regresores) son necesarios.</li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold text-gray-700 mb-4">7.3. Recomendaciones y Perspectivas Futuras</h3>
+            <p class="mb-4">Se recomienda comenzar el análisis de series de tiempo con una exploración exhaustiva de los datos y modelos clásicos (por ejemplo, descomposición estacional, ARIMA, Holt-Winters) para establecer líneas base y comprender los patrones fundamentales. Solo se deben introducir modelos de ML/DL más complejos si los enfoques más simples son insuficientes o si las características de los datos (por ejemplo, no linealidad extrema, alta dimensionalidad) lo justifican.</p>
+            <p class="mb-4">La ingeniería de características es un aspecto crucial, especialmente al usar modelos de ML/DL. La creación de características de retardo, indicadores de estacionalidad, variables de festividades y otras características derivadas del tiempo puede mejorar significativamente el rendimiento de cualquier modelo. La validación rigurosa del modelo, mediante técnicas como la validación cruzada para series de tiempo o el <em>backtesting</em>, es esencial para evaluar la capacidad de generalización del modelo en datos no vistos y evitar el sobreajuste.</p>
+            <p class="mb-4">El ecosistema de Python ofrece una amplia gama de herramientas para cada etapa del análisis de series de tiempo. Librerías como Pandas y NumPy son fundamentales para la manipulación de datos. Statsmodels y pmdarima son excelentes para modelos estadísticos clásicos y pruebas. Prophet, XGBoost y LightGBM proporcionan soluciones robustas de ML, mientras que TensorFlow/Keras y PyTorch son la base para modelos de aprendizaje profundo. Librerías como Darts y sktime ofrecen interfaces unificadas que simplifican el flujo de trabajo al integrar diversos modelos.</p>
+            <p class="mb-4">Las perspectivas futuras en el pronóstico de series de tiempo apuntan hacia modelos híbridos que combinan lo mejor de diferentes enfoques (por ejemplo, modelos estadísticos con redes neuronales), así como el desarrollo continuo de arquitecturas de aprendizaje profundo más eficientes y escalables, como los Transformers, para manejar conjuntos de datos de series de tiempo cada vez más grandes y complejos. La interpretabilidad de los modelos de aprendizaje profundo sigue siendo un área activa de investigación, buscando equilibrar la precisión predictiva con la comprensión del comportamiento del modelo.</p>
+        </section>
+
+        <section id="referencias" class="mb-12 pt-6 border-t border-gray-200">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Referencias y Recursos Adicionales</h2>
+            <ol class="list-decimal pl-5 space-y-2 text-gray-700">
+                <li><a id="ref-1"></a>Montgomery, D. C., Jennings, C. L., & Kulahci, M. (2015). *Introduction to Time Series Analysis and Forecasting*. John Wiley & Sons. <a href="https://www.wiley.com/en-us/Introduction+to+Time+Series+Analysis+and+Forecasting%2C+2nd+Edition-p-9781118745113" target="_blank" class="text-blue-600 hover:underline">Wiley</a></li>
+                <li><a id="ref-2"></a>Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.). OTexts. <a href="https://otexts.com/fpp3/" target="_blank" class="text-blue-600 hover:underline">OTexts</a></li>
+                <li><a id="ref-3"></a>Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015). *Time Series Analysis: Forecasting and Control* (5th ed.). John Wiley & Sons. <a href="https://www.wiley.com/en-us/Time+Series+Analysis%3A+Forecasting+and+Control%2C+5th+Edition-p-9781118675021" target="_blank" class="text-blue-600 hover:underline">Wiley</a></li>
+                <li><a id="ref-4"></a>Makridakis, S., Wheelwright, S. C., & Hyndman, R. J. (1998). *Forecasting: Methods and Applications* (3rd ed.). John Wiley & Sons. <a href="https://www.wiley.com/en-us/Forecasting%3A+Methods+and+Applications%2C+3rd+Edition-p-9780471532230" target="_blank" class="text-blue-600 hover:underline">Wiley</a></li>
+                <li><a id="ref-5"></a>Business Cycles (Investopedia): <a href="https://www.investopedia.com/terms/b/businesscycle.asp" target="_blank" class="text-blue-600 hover:underline">https://www.investopedia.com/terms/b/businesscycle.asp</a></li>
+                <li><a id="ref-6"></a>Cryer, J. D., & Chan, K. S. (2008). *Time Series Analysis: With Applications in R* (2nd ed.). Springer. <a href="https://link.springer.com/book/10.1007/978-0-387-75959-3" target="_blank" class="text-blue-600 hover:underline">Springer</a></li>
+                <li><a id="ref-7"></a>Shumway, R. H., & Stoffer, D. S. (2017). *Time Series Analysis and Its Applications: With R Examples* (4th ed.). Springer. <a href="https://link.springer.com/book/10.1007/978-3-319-52452-8" target="_blank" class="text-blue-600 hover:underline">Springer</a></li>
+                <li><a id="ref-8"></a>Hamilton, J. D. (1994). *Time Series Analysis*. Princeton University Press. <a href="https://press.princeton.edu/books/paperback/9780691042893/time-series-analysis" target="_blank" class="text-blue-600 hover:underline">Princeton University Press</a></li>
+                <li><a id="ref-9"></a>Brockwell, P. J., & Davis, R. A. (2016). *Introduction to Time Series and Forecasting* (3rd ed.). Springer. <a href="https://link.springer.com/book/10.1007/978-3-319-29854-2" target="_blank" class="text-blue-600 hover:underline">Springer</a></li>
+                <li><a id="ref-10"></a>Autocovariance (Wikipedia): <a href="https://en.wikipedia.org/wiki/Autocovariance" target="_blank" class="text-blue-600 hover:underline">https://en.wikipedia.org/wiki/Autocovariance</a></li>
+                <li><a id="ref-11"></a>Autocorrelation (Wikipedia): <a href="https://en.wikipedia.org/wiki/Autocorrelation" target="_blank" class="text-blue-600 hover:underline">https://en.wikipedia.org/wiki/Autocorrelation</a></li>
+                <li><a id="ref-12"></a>Time Series Analysis - Autocorrelation Function (AF) and Partial Autocorrelation Function (PAF) (Towards Data Science): <a href="https://towardsdatascience.com/time-series-analysis-autocorrelation-function-af-and-partial-autocorrelation-function-paf-1f3c5520a76a" target="_blank" class="text-blue-600 hover:underline">https://towardsdatascience.com/time-series-analysis-autocorrelation-function-af-and-partial-autocorrelation-function-paf-1f3c5520a76a</a></li>
+                <li><a id="ref-13"></a>Forecasting with ARIMA Models (Statology): <a href="https://www.statology.org/forecasting-with-arima-models/" target="_blank" class="text-blue-600 hover:underline">https://www.statology.org/forecasting-with-arima-models/</a></li>
+                <li><a id="ref-14"></a>Dickey-Fuller Test (Investopedia): <a href="https://www.investopedia.com/terms/d/dickeyfullertest.asp" target="_blank" class="text-blue-600 hover:underline">https://www.investopedia.com/terms/d/dickeyfullertest.asp</a></li>
+                <li><a id="ref-15"></a>Augmented Dickey-Fuller Test (Wikipedia): <a href="https://en.wikipedia.org/wiki/Augmented_Dickey%E2%80%93Fuller_test" target="_blank" class="text-blue-600 hover:underline">https://en.wikipedia.org/wiki/Augmented_Dickey%E2%80%93Fuller_test</a></li>
+                <li><a id="ref-16"></a>Time Series Modeling with Statsmodels (GeeksforGeeks): <a href="https://www.geeksforgeeks.org/deep-learning/time-series-modeling-with-statsmodels/" target="_blank" class="text-blue-600 hover:underline">https://www.geeksforgeeks.org/deep-learning/time-series-modeling-with-statsmodels/</a></li>
+                <li><a id="ref-17"></a>Engle, R. F. (1982). Autoregressive Conditional Heteroscedasticity with Estimates of the Variance of United Kingdom Inflation. *Econometrica*, 50(4), 987-1007. <a href="https://www.jstor.org/stable/1912773" target="_blank" class="text-blue-600 hover:underline">JSTOR</a></li>
+                <li><a id="ref-18"></a>ARCH-LM Test (Wikipedia): <a href="https://en.wikipedia.org/wiki/Autoregressive_conditional_heteroscedasticity#ARCH_LM_test" target="_blank" class="text-blue-600 hover:underline">https://en.wikipedia.org/wiki/Autoregressive_conditional_heteroscedasticity#ARCH_LM_test</a></li>
+                <li><a id="ref-19"></a>Tsay, R. S. (2013). *An Introduction to Analysis of Financial Data with R*. John Wiley & Sons. <a href="https://www.wiley.com/en-us/An+Introduction+to+Analysis+of+Financial+Data+with+R-p-9781118901243" target="_blank" class="text-blue-600 hover:underline">Wiley</a></li>
+                <li><a id="ref-20"></a>ARIMAX Model (Forecasting Principles): <a href="https://www.forecastingprinciples.com/files/pdf/ARIMAX%20Model.pdf" target="_blank" class="text-blue-600 hover:underline">Forecasting Principles (PDF)</a></li>
+                <li><a id="ref-21"></a>ARIMAX in Python (Machine Learning Mastery): <a href="https://machinelearningmastery.com/arima-for-time-series-forecasting-with-python/" target="_blank" class="text-blue-600 hover:underline">https://machinelearningmastery.com/arima-for-time-series-forecasting-with-python/</a> (Note: This link covers ARIMA, but ARIMAX is often implemented via SARIMAX in `statsmodels` as mentioned in the text.)</li>
+                <li><a id="ref-22"></a>Holt-Winters Forecasting Method (Wikipedia): <a href="https://en.wikipedia.org/wiki/Exponential_smoothing#Holt%E2%80%93Winters_seasonal_method" target="_blank" class="text-blue-600 hover:underline">https://en.wikipedia.org/wiki/Exponential_smoothing#Holt%E2%80%93Winters_seasonal_method</a></li>
+                <li><a id="ref-23"></a>Statsmodels - Exponential Smoothing: <a href="https://www.statsmodels.org/stable/generated/statsmodels.tsa.api.ExponentialSmoothing.html" target="_blank" class="text-blue-600 hover:underline">https://www.statsmodels.org/stable/generated/statsmodels.tsa.api.ExponentialSmoothing.html</a></li>
+                <li><a id="ref-24"></a>Darts: Time Series Made Easy in Python (Unit8 Blog): <a href="https://unit8.com/resources/darts-time-series-made-easy-in-python/" target="_blank" class="text-blue-600 hover:underline">https://unit8.com/resources/darts-time-series-made-easy-in-python/</a></li>
+                <li><a id="ref-25"></a>Time Series Forecasting with Python (blog.trainindata.com): <a href="https://www.blog.trainindata.com/time-series-forecasting-python/" target="_blank" class="text-blue-600 hover:underline">https://www.blog.trainindata.com/time-series-forecasting-python/</a></li>
+                <li><a id="ref-26"></a>GARCH Model (Investopedia): <a href="https://www.investopedia.com/terms/g/garch-model.asp" target="_blank" class="text-blue-600 hover:underline">https://www.investopedia.com/terms/g/garch-model.asp</a></li>
+                <li><a id="ref-27"></a>Recurrent Neural Network (Wikipedia): <a href="https://en.wikipedia.org/wiki/Recurrent_neural_network" target="_blank" class="text-blue-600 hover:underline">https://en.wikipedia.org/wiki/Recurrent_neural_network</a></li>
+                <li><a id="ref-28"></a>Oliva, J., & Henao, R. (2020). *Deep Learning for Time Series Forecasting*. Packt Publishing. <a href="https://www.packtpub.com/product/deep-learning-for-time-series-forecasting/9781838828941" target="_blank" class="text-blue-600 hover:underline">Packt Publishing</a></li>
+                <li><a id="ref-29"></a>Géron, A. (2019). *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow* (2nd ed.). O'Reilly Media. <a href="https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/" target="_blank" class="text-blue-600 hover:underline">O'Reilly Media</a></li>
+                <li><a id="ref-30"></a>LSTM (Long Short-Term Memory) (Wikipedia): <a href="https://en.wikipedia.org/wiki/Long_short-term_memory" target="_blank" class="text-blue-600 hover:underline">https://en.wikipedia.org/wiki/Long_short-term_memory</a></li>
+                <li><a id="ref-31"></a>Taylor, S. J., & Letham, B. (2018). Forecasting at Scale. *The American Statistician*, 72(1), 37-45. <a href="https://peerj.com/preprints/3190/" target="_blank" class="text-blue-600 hover:underline">PeerJ Preprints</a></li>
+                <li><a id="ref-32"></a>Prophet (GitHub Repository): <a href="https://github.com/facebook/prophet" target="_blank" class="text-blue-600 hover:underline">https://github.com/facebook/prophet</a></li>
+                <li><a id="ref-33"></a>Prophet | Forecasting at scale (Official Website): <a href="https://facebook.github.io/prophet/" target="_blank" class="text-blue-600 hover:underline">https://facebook.github.io/prophet/</a></li>
+                <li><a id="ref-34"></a>How to Use XGBoost and LGBM for Time Series Forecasting? (365 Data Science): <a href="https://365datascience.com/tutorials/python-tutorials/xgboost-lgbm/" target="_blank" class="text-blue-600 hover:underline">https://365datascience.com/tutorials/python-tutorials/xgboost-lgbm/</a></li>
+                <li><a id="ref-35"></a>Prophet Official Documentation (Python Quick Start): <a href="https://facebook.github.io/prophet/docs/quick_start.html" target="_blank" class="text-blue-600 hover:underline">https://facebook.github.io/prophet/docs/quick_start.html</a></li>
+                <li><a id="ref-36"></a>Time-Series Forecasting with Darts: A Hands-On Tutorial (Magnimind Academy): <a href="https://magnimindacademy.com/blog/time-series-forecasting-with-darts-a-hands-on-tutorial/" target="_blank" class="text-blue-600 hover:underline">https://magnimindacademy.com/blog/time-series-forecasting-with-darts-a-hands-on-tutorial/</a></li>
+                <li><a id="ref-37"></a>Time Series Forecasting With Prophet in Python (Machine Learning Mastery): <a href="https://machinelearningmastery.com/time-series-forecasting-with-prophet-in-python/" target="_blank" class="text-blue-600 hover:underline">https://machinelearningmastery.com/time-series-forecasting-with-prophet-in-python/</a></li>
+                <li><a id="ref-38"></a>XGBoost vs LightGBM (neptune.ai blog): <a href="https://neptune.ai/blog/xgboost-vs-lightgbm" target="_blank" class="text-blue-600 hover:underline">https://neptune.ai/blog/xgboost-vs-lightgbm</a></li>
+                <li><a id="ref-39"></a>Forecasting time series with gradient boosting: Skforecast, XGBoost, LightGBM, Scikit-learn and CatBoost (cienciadedatos.net): <a href="https://cienciadedatos.net/documentos/py39-forecasting-time-series-with-skforecast-xgboost-lightgbm-catboost" target="_blank" class="text-blue-600 hover:underline">https://cienciadedatos.net/documentos/py39-forecasting-time-series-with-skforecast-xgboost-lightgbm-catboost</a></li>
+                <li><a id="ref-40"></a>Python for Data Analysis (O'Reilly Media): <a href="https://www.oreilly.com/library/view/python-for-data/9781491957653/" target="_blank" class="text-blue-600 hover:underline">O'Reilly Media</a></li>
+                <li><a id="ref-41"></a>Darts (Official Documentation): <a href="https://unit8co.github.io/darts/generated_api/darts.timeseries.html" target="_blank" class="text-blue-600 hover:underline">https://unit8co.github.io/darts/generated_api/darts.timeseries.html</a></li>
+                <li><a id="ref-42"></a>Python for Data Science Handbook (Jake VanderPlas): <a href="https://jakevdp.github.io/PythonDataScienceHandbook/" target="_blank" class="text-blue-600 hover:underline">https://jakevdp.github.io/PythonDataScienceHandbook/</a></li>
+                <li><a id="ref-43"></a>Multivariate time series forecasting with sktime (IBM Tutorial): <a href="https://www.ibm.com/think/tutorials/sktime-multivariate-time-series-forecasting" target="_blank" class="text-blue-600 hover:underline">https://www.ibm.com/think/tutorials/sktime-multivariate-time-series-forecasting</a></li>
+                <li><a id="ref-44"></a>Forecasting with sktime (Official Docs): <a href="https://www.sktime.net/en/latest/examples/01_forecasting.html" target="_blank" class="text-blue-600 hover:underline">https://www.sktime.net/en/latest/examples/01_forecasting.html</a></li>
+                <li><a id="ref-45"></a>Time Series Forecasting using Pytorch (GeeksforGeeks): <a href="https://www.geeksforgeeks.org/data-analysis/time-series-forecasting-using-pytorch/" target="_blank" class="text-blue-600 hover:underline">https://www.geeksforgeeks.org/data-analysis/time-series-forecasting-using-pytorch/</a></li>
+                <li><a id="ref-46"></a>Python for Finance (Yves Hilpisch): <a href="https://www.oreilly.com/library/view/python-for-finance/9781492024330/" target="_blank" class="text-blue-600 hover:underline">O'Reilly Media</a></li>
+                <li><a id="ref-47"></a>Darts Quickstart (Official Docs): <a href="https://unit8co.github.io/darts/quickstart/00-quickstart.html" target="_blank" class="text-blue-600 hover:underline">https://unit8co.github.io/darts/quickstart/00-quickstart.html</a></li>
+                <li><a id="ref-48"></a>Time Series Forecasting with TensorFlow (mlq.ai blog): <a href="https://blog.mlq.ai/time-series-forecasting-tensorflow/" target="_blank" class="text-blue-600 hover:underline">https://blog.mlq.ai/time-series-forecasting-tensorflow/</a></li>
+                <li><a id="ref-49"></a>Time Series Forecasting with Python (New Horizons Course): <a href="https://www.newhorizons.com/course-outline/courseid/300200918/coursename/time-series-forecasting-with-python" target="_blank" class="text-blue-600 hover:underline">https://www.newhorizons.com/course-outline/courseid/300200918/coursename/time-series-forecasting-with-python</a></li>
+                <li><a id="ref-50"></a>Basics of Statsmodel (YouTube): <a href="https://www.youtube.com/watch?v=vIfsu7z9bwI" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=vIfsu7z9bwI</a></li>
+                <li><a id="ref-51"></a>Time Series Regressions in Python with Statsmodels (YouTube): <a href="https://www.youtube.com/watch?v=Rq3lEPKvKKo" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=Rq3lEPKvKKo</a></li>
+                <li><a id="ref-52"></a>pmdarima (GitHub Repository): <a href="https://github.com/alkaline-ml/pmdarima" target="_blank" class="text-blue-600 hover:underline">https://github.com/alkaline-ml/pmdarima</a></li>
+                <li><a id="ref-53"></a>pmdarima (Official Documentation): <a href="https://alkaline-ml.com/pmdarima/index.html" target="_blank" class="text-blue-600 hover:underline">https://alkaline-ml.com/pmdarima/index.html</a></li>
+                <li><a id="ref-54"></a>pmdarima.arima.auto_arima (Official Documentation): <a href="https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.auto_arima.html" target="_blank" class="text-blue-600 hover:underline">https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.auto_arima.html</a></li>
+                <li><a id="ref-55"></a>pmdarima.arima.auto_arima: <a href="https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.auto_arima.html" target="_blank" class="text-blue-600 hover:underline">https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.auto_arima.html</a></li>
+                <li><a id="ref-56"></a>pmdarima - Auto ARIMA: <a href="https://alkaline-ml.com/pmdarima/auto_examples/index.html#auto-arima" target="_blank" class="text-blue-600 hover:underline">https://alkaline-ml.com/pmdarima/auto_examples/index.html#auto-arima</a></li>
+                <li><a id="ref-57"></a>Ejemplos de pmdarima: <a href="https://alkaline-ml.com/pmdarima/auto_examples/index.html" target="_blank" class="text-blue-600 hover:underline">https://alkaline-ml.com/pmdarima/auto_examples/index.html</a></li>
+                <li><a id="ref-58"></a>Comprehensive Guide to Time Series Forecasting with Python (YouTube): <a href="https://www.youtube.com/watch?v=lKUDBXeOsBQ" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=lKUDBXeOsBQ</a></li>
+                <li><a id="ref-59"></a>Time Series Analysis in Python (Data Ranger): <a href="https://m.youtube.com/playlist?list=PLtIY5kwXKny91_IbkqcIXuv6t1prQwFhO" target="_blank" class="text-blue-600 hover:underline">https://m.youtube.com/playlist?list=PLtIY5kwXKny91_IbkqcIXuv6t1prQwFhO</a></li>
+                <li><a id="ref-60"></a>Python Time Series Forecasting Tutorial with Meta Prophet (YouTube): <a href="https://www.youtube.com/watch?v=nIoHj7ei2to" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=nIoHj7ei2to</a></li>
+                <li><a id="ref-61"></a>Time Series Forecasting with Facebook Prophet (YouTube - low code): <a href="https://www.youtube.com/watch?v=xF8w2Pz9OQo" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=xF8w2Pz9OQo</a></li>
+                <li><a id="ref-62"></a>Time Series Prediction and Forecasting using Facebook Prophet (YouTube - beginners): <a href="https://www.youtube.com/watch?v=2vF2xTUXJwM&pp=0gcJCU8JAYcqIYzv" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=2vF2xTUXJwM&pp=0gcJCU8JAYcqIYzv</a></li>
+                <li><a id="ref-63"></a>Time Series Forecasting with Facebook Prophet in Python (Coursera): <a href="https://www.coursera.org/learn/packt-time-series-forecasting-with-facebook-prophet-in-python-7sw5w" target="_blank" class="text-blue-600 hover:underline">https://www.coursera.org/learn/packt-time-series-forecasting-with-facebook-prophet-in-python-7sw5w</a></li>
+                <li><a id="ref-64"></a>Mastering Time Series Forecasting: Build a Transformer Model in Keras (YouTube): <a href="https://www.youtube.com/watch?v=LNydD9ZemZ8" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=LNydD9ZemZ8</a></li>
+                <li><a id="ref-65"></a>Python Tutorial (Tensorflow, Keras) - LSTM for beginners (YouTube): <a href="https://www.youtube.com/watch?v=mscyUYOF0cw" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=mscyUYOF0cw</a></li>
+                <li><a id="ref-66"></a>Keras (Official Documentation): <a href="https://keras.io/" target="_blank" class="text-blue-600 hover:underline">https://keras.io/</a></li>
+                <li><a id="ref-67"></a>LSTM Time Series Forecasting model using TensorFlow and Python (YouTube): <a href="https://www.youtube.com/watch?v=94PlBzgeq90" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=94PlBzgeq90</a></li>
+                <li><a id="ref-68"></a>Sequences, Time Series and Prediction (Coursera - TensorFlow Specialization): <a href="https://www.coursera.org/learn/tensorflow-sequences-time-series-and-prediction" target="_blank" class="text-blue-600 hover:underline">https://www.coursera.org/learn/tensorflow-sequences-time-series-and-prediction</a></li>
+                <li><a id="ref-69"></a>How to predict time-series data using a Recurrent Neural Network (GRU / LSTM) in TensorFlow and Keras (YouTube): <a href="https://www.youtube.com/watch?v=6f67zrH-_IE" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=6f67zrH-_IE</a></li>
+                <li><a id="ref-70"></a>PyTorch (Official Website): <a href="https://pytorch.org/" target="_blank" class="text-blue-600 hover:underline">https://pytorch.org/</a></li>
+                <li><a id="ref-71"></a>LSTM Time Series Prediction Tutorial using PyTorch in Python (YouTube - Coronavirus Cases): <a href="https://www.youtube.com/watch?v=8A6TEjG2DNw" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=8A6TEjG2DNw</a></li>
+                <li><a id="ref-72"></a>PyTorch Forecasting Documentation: <a href="https://pytorch-forecasting.readthedocs.io" target="_blank" class="text-blue-600 hover:underline">https://pytorch-forecasting.readthedocs.io</a></li>
+                <li><a id="ref-73"></a>PyTorch Time Sequence Prediction With LSTM - Forecasting Tutorial (Class Central): <a href="https://www.classcentral.com/course/youtube-pytorch-time-sequence-prediction-with-lstm-forecasting-tutorial-117187" target="_blank" class="text-blue-600 hover:underline">https://www.classcentral.com/course/youtube-pytorch-time-sequence-prediction-with-lstm-forecasting-tutorial-117187</a></li>
+                <li><a id="ref-74"></a>PyTorch Time Series Forecasting series (YouTube - Airline Passenger dataset): <a href="https://www.youtube.com/watch?v=OiuIDrg7McU" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=OiuIDrg7McU</a></li>
+                <li><a id="ref-75"></a>PyTorch Time Sequence Prediction With LSTM - Forecasting Tutorial (YouTube - Python Engineer): <a href="https://www.youtube.com/watch?v=AvKSPZ7oyVg" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=AvKSPZ7oyVg</a></li>
+                <li><a id="ref-76"></a>Time Series Forecasting in Python - Darts (YouTube): <a href="https://www.youtube.com/watch?v=YkLrR74LvJU" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=YkLrR74LvJU</a></li>
+                <li><a id="ref-77"></a>Darts (GitHub Repository): <a href="https://github.com/unit8co/darts" target="_blank" class="text-blue-600 hover:underline">https://github.com/unit8co/darts</a></li>
+                <li><a id="ref-78"></a>Darts Examples (Official Documentation): <a href="https://unit8co.github.io/darts/examples/index.html" target="_blank" class="text-blue-600 hover:underline">https://unit8co.github.io/darts/examples/index.html</a></li>
+                <li><a id="ref-79"></a>Darts by Unit8: <a href="https://www.youtube.com/playlist?list=PLxzpq1ouJ5mchBJPUmbIxB7CNoX4T4ZKz" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/playlist?list=PLxzpq1ouJ5mchBJPUmbIxB7CNoX4T4ZKz</a></li>
+                <li><a id="ref-80"></a>sktime Documentation (Tutorials section): <a href="https://www.sktime.net/en/latest/tutorials.html" target="_blank" class="text-blue-600 hover:underline">https://www.sktime.net/en/latest/tutorials.html</a></li>
+                <li><a id="ref-81"></a>Practical Time Series with Machine Learning in sktime: <a href="https://www.youtube.com/playlist?list=PL3odEuBfDQmlao4FVS1vitCPgDAg_FTjm" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/playlist?list=PL3odEuBfDQmlao4FVS1vitCPgDAg_FTjm</a></li>
+                <li><a id="ref-82"></a>PyData Global 2023 - sktime: A Unified Framework for Time Series Machine Learning: <a href="https://www.youtube.com/watch?v=_WNLjqrBaBY" target="_blank" class="text-blue-600 hover:underline">https://www.youtube.com/watch?v=_WNLjqrBaBY</a></li>
+                <li><a id="ref-83"></a>Repositorio GitHub de TSLib: <a href="https://github.com/thuml/Time-Series-Library" target="_blank" class="text-blue-600 hover:underline">https://github.com/thuml/Time-Series-Library</a></li>
+                <li>Pandas Official Documentation: <a href="https://pandas.pydata.org/docs/" target="_blank" class="text-blue-600 hover:underline">https://pandas.pydata.org/docs/</a></li>
+                <li>NumPy Official Documentation: <a href="https://numpy.org/doc/" target="_blank" class="text-blue-600 hover:underline">https://numpy.org/doc/</a></li>
+            </ol>
+        </section>
+
+        <footer class="text-center text-sm text-gray-500 mt-12 pt-6 border-t border-gray-200">
+            <p>Documento generado basado en la investigación de series de tiempo.</p>
+            <p class="mt-1">20 de julio de 2025 - Ciudad de México, México</p>
+        </footer>
+    </div>
+</body>
+</html>
