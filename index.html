@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Msc. Luis Enrique Ascencio G.</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            /* Default: Dark-Blue Theme */
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(56, 189, 248, 0.2);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-color: #38bdf8;
+            --nav-bg: rgba(15, 23, 42, 0.8);
+        }
+
+        body.theme-dark {
+            --bg-color: #0a0a0a;
+            --card-bg: rgba(23, 23, 23, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --accent-color: #f5f5f5;
+            --nav-bg: rgba(10, 10, 10, 0.8);
+        }
+
+        body.theme-dark-orange {
+            --bg-color: #000000;
+            --card-bg: rgba(18, 18, 18, 0.8);
+            --card-border: rgba(255, 120, 0, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --accent-color: #ff7800;
+            --nav-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        body.theme-dark-cyan {
+            --bg-color: #000000;
+            --card-bg: rgba(18, 18, 18, 0.8);
+            --card-border: rgba(0, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --accent-color: #00ffff;
+            --nav-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        body.theme-dark-red {
+            --bg-color: #000000;
+            --card-bg: rgba(18, 18, 18, 0.8);
+            --card-border: rgba(255, 0, 0, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --accent-color: #ff3131;
+            --nav-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        body.theme-light {
+            --bg-color: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(0, 0, 0, 0.05);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent-color: #2563eb;
+            --nav-bg: rgba(248, 250, 252, 0.8);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+            border-color: var(--accent-color);
+        }
+
+        .theme-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .theme-btn.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-color);
+        }
+
+        /* Nav Glassmorphism */
+        header {
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .accent-text { color: var(--accent-color); }
+        .accent-bg { background-color: var(--accent-color); }
+        .secondary-text { color: var(--text-secondary); }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-color);
+            color: #000;
+            font-weight: 600;
+            border-color: var(--accent-color);
+        }
+
+        .contact-btn {
+            transition: transform 0.2s ease;
+        }
+        .contact-btn:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <header class="py-4 px-6 md:px-10">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold accent-text">Luis Enrique Ascencio G. <span class="text-xs font-normal opacity-70"> Porfolio</span></h1>
+                <p class="text-sm secondary-text"> Data Scientist | Statistician | PhD Candidate | Data engineer and machine learning in training </p>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <!-- Theme Switcher -->
+                <div class="flex items-center bg-black/40 p-2 rounded-full gap-3 border border-white/10">
+                    <button onclick="setTheme('dark-blue')" id="btn-dark-blue" class="theme-btn bg-[#0f172a]" title="Dark Blue"></button>
+                    <button onclick="setTheme('dark')" id="btn-dark" class="theme-btn bg-[#0a0a0a]" title="Pitch Black"></button>
+                    <button onclick="setTheme('dark-orange')" id="btn-dark-orange" class="theme-btn bg-[#ff7800]" title="Dark Orange"></button>
+                    <button onclick="setTheme('dark-cyan')" id="btn-dark-cyan" class="theme-btn bg-[#00ffff]" title="Dark Cyan"></button>
+                    <button onclick="setTheme('dark-red')" id="btn-dark-red" class="theme-btn bg-[#ff3131]" title="Dark Red"></button>
+                    <button onclick="setTheme('light')" id="btn-light" class="theme-btn bg-[#f8fafc]" title="Light Soft"></button>
+                </div>
+
+                <nav>
+                    <ul class="flex space-x-4 text-sm font-medium">
+                        <li><a href="https://github.com/LuisGorozpe" target="_blank" class="hover:accent-text transition">GitHub</a></li>
+                        <li><a href="CV-Luis-Enrique-Ascencio-G.pdf" class="hover:accent-text transition">CV</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-6 md:p-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Portfolio Section -->
+        <section class="lg:col-span-3">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Projects & Notebooks</h2>
+                <div class="h-1 w-20 accent-bg rounded-full shadow-[0_0_10px_var(--accent-color)]"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                                <!-- Project Card 0 -->
+                <article class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold px-2 py-1 rounded bg-blue-500/10 accent-text border border-current">Github</span>
+                            <span class="text-[10px] opacity-50 italic">Github Projects</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Interactive Github Portfolio</h3>
+                        <p class="secondary-text text-sm mb-6 leading-relaxed">
+                            Here you can find all my GitHub repositories.
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="https://luisgorozpe.github.io/portfolio/" class="btn-action p-2 rounded-lg flex items-center gap-2 text-[11px]">
+                            <svg class="w-6 h-6 accent-text" fill="none" stroke="currentColor" viewBox="0 0 30 30"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            Web
+                        </a>
+                        <a href="https://github.com/LuisGorozpe?tab=repositories" class="btn-action p-2 rounded-lg flex items-center gap-2 text-[11px]">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 30 30"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            Github
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Project Card 1 -->
+                <article class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold px-2 py-1 rounded bg-blue-500/10 accent-text border border-current">Workshop</span>
+                            <span class="text-[10px] opacity-50 italic">Teaching</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Python Programming with Applications to Time Series (Spanish)</h3>
+                        <p class="secondary-text text-sm mb-6 leading-relaxed">
+                        Advanced programming practices with Python, an introduction to time series - Workshop given at the Institute of Economic Research at UNAM.
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="https://luisgorozpe.github.io/py-ts-course" class="btn-action p-2 rounded-lg flex items-center gap-2 text-[11px]">
+                            <svg class="w-6 h-6 accent-text" fill="none" stroke="currentColor" viewBox="0 0 30 30"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            Web
+                        </a>
+                        <a href="https://github.com/LuisGorozpe/py-ts-course" class="btn-action p-2 rounded-lg flex items-center gap-2 text-[11px]">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 30 30"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            Page Repo
+                        </a>
+                        <a href="https://economicas.unam.mx/actividades/practicas-python-2025" class="btn-action p-2 rounded-lg flex items-center gap-2 text-[11px]">
+                            <svg class="w-6 h-6 accent-text" fill="none" stroke="currentColor" viewBox="0 0 30 30"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            Official announcement
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Project Card 2 -->
+                <!--  <article class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold px-2 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-400/30">UI Architecture</span>
+                            <span class="text-[10px] opacity-50 italic">GitHub Repo</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Design System "Quartz"</h3>
+                        <p class="secondary-text text-sm mb-6 leading-relaxed">
+                            Librería de componentes React basada en principios de diseño atómico y optimización de renderizado CSS-in-JS.
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="#" class="btn-action p-2 rounded-lg flex items-center gap-2 text-[11px]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            Repo
+                        </a>
+                        <a href="#" class="btn-action p-2 rounded-lg flex items-center gap-2 text-[11px]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            Demo
+                        </a>
+                    </div>
+                </article>
+                -->
+            </div>
+        </section>
+
+        <!-- Sidebar Contact Section -->
+        <aside id="contacto" class="glass-card p-6 rounded-2xl h-fit">
+            <h2 class="text-xl font-bold mb-6 border-b border-white/10 pb-3">Contact me</h2>
+            <div class="space-y-3">
+                
+                <!-- GitHub Button -->
+                <a href="https://github.com/LuisGorozpe" target="_blank" class="contact-btn flex items-center gap-3 bg-neutral-800 hover:bg-neutral-700 text-white py-3 px-4 rounded-xl shadow-lg border border-white/5">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold">GitHub</span>
+                        <span class="text-[10px] opacity-60">LuisGorozpe</span>
+                    </div>
+                </a>
+
+                <!-- Personal Site Button -->
+                <a href="https://luisgorozpe.github.io/al-folio" target="_blank" class="contact-btn flex items-center gap-3 bg-blue-600/20 hover:bg-blue-600/30 text-white py-3 px-4 rounded-xl border border-blue-500/30">
+                    <svg class="w-6 h-6 accent-text" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold">Personal Page</span>
+                        <span class="text-[10px] opacity-60">Academic and professional page</span>
+                    </div>
+                </a>
+                
+                <a href="https://www.linkedin.com/in/luisgorozpe" target="_blank" class="contact-btn flex items-center gap-3 bg-[#0077b5] hover:brightness-110 text-white py-3 px-4 rounded-xl">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.352-.027-3.119-1.9-3.119-1.901 0-2.186 1.485-2.186 3.02v5.668H9.276V9.28h3.418v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.27 2.378 4.27 5.462v6.225zM5.005 7.917a2.91 2.91 0 01-2.91-2.91c0-1.607 1.303-2.91 2.91-2.91s2.91 1.303 2.91 2.91c0 1.607-1.303 2.91-2.91 2.91zm-1.751 12.535h3.502V9.28H3.254v11.172z"/></svg>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold">LinkedIn</span>
+                        <span class="text-[10px] opacity-80">luisgorozpe</span>
+                    </div>
+                </a>
+
+                <!-- ORCID Button -->
+                <a href="https://orcid.org/0009-0009-1694-5993" target="_blank" class="contact-btn flex items-center gap-3 bg-green-600/20 hover:bg-green-600/30 text-white py-3 px-4 rounded-xl border border-green-500/30">
+                    <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-2.73 17.514H7.55V6.486h1.72V17.514zm4.49-1.28c0 .28-.23.51-.51.51h-1.28c-.28 0-.51-.23-.51-.51V7.77c0-.28.23-.51.51-.51h1.28c.28 0 .51.23.51.51v8.464z"/></svg>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold">ORCID</span>
+                        <span class="text-[10px] opacity-60">0009-0009-1694-5993</span>
+                    </div>
+                </a>
+
+                <a href="mailto:luis.ascencio@cimat.mx" class="contact-btn flex items-center gap-3 bg-red-600/90 hover:brightness-110 text-white py-3 px-4 rounded-xl">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold">Email</span>
+                        <span class="text-[10px] opacity-80">CIMAT</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="mt-8 p-4 bg-white/5 rounded-xl border border-white/5 text-center">
+                <p class="text-[10px] secondary-text uppercase tracking-widest font-bold mb-3">Expertise</p>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <span class="text-[10px] px-2 py-0.5 bg-blue-500/10 rounded-full border border-blue-500/20">Machine Learning Models</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">Data Science</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">Statistics</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Time Series Analysis</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Economics Models</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Geospatial Analysis</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Functional Data Analysis</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Manifold Learning</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">Deep Learning</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">ARIMA models</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">GARCH models</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Stochastic Processes</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Bayesian Inference</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Non-Euclidean Statistics</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Numerical Methods</span>
+                </div>
+
+                
+                            <div class="mt-8 p-4 bg-white/5 rounded-xl border border-white/5 text-center">
+                <p class="text-[10px] secondary-text uppercase tracking-widest font-bold mb-3">Tech Stack</p>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <span class="text-[10px] px-2 py-0.5 bg-blue-500/10 rounded-full border border-blue-500/20">Python</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">R</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">SQL</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Bash</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Docker</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Linux</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Git</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Github</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">C</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">C++</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-cyan-500/10 rounded-full border border-cyan-500/20">Spark</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-yellow-500/10 rounded-full border border-yellow-500/20">Databricks</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Matplotlib</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Pandas</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Numpy</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Statmodels</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Jax</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">PyTorch</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">scikit-learn</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">SciPy</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-purple-500/10 rounded-full border border-purple-500/20">Polars</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="py-8 text-center text-[11px] secondary-text border-t border-white/5 mt-auto">
+        <p>&copy; 2025 | Diseñado con Glassmorphism & Vanilla JS.</p>
+    </footer>
+
+    <script>
+        /**
+         * Theme Switcher Logic
+         */
+        function setTheme(themeName) {
+            // Remove all possible theme classes
+            document.body.classList.remove('theme-dark', 'theme-light', 'theme-dark-orange', 'theme-dark-cyan', 'theme-dark-red');
+            
+            // Remove active state from all buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Apply specific theme if not default
+            if (themeName !== 'dark-blue') {
+                document.body.classList.add(`theme-${themeName}`);
+            }
+            
+            // Highlight the active button
+            const activeBtn = document.getElementById(`btn-${themeName}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Save preference locally
+            localStorage.setItem('user-theme', themeName);
+        }
+
+        // Initialize theme on window load
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('user-theme') || 'dark-blue';
+            setTheme(savedTheme);
+        };
+    </script>
+</body>
+</html>
